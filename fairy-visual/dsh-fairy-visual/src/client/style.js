@@ -275,6 +275,24 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
   // Translate the complete SVG, including its masks, as one reflection below
   // the subtitle rail; its inner layer geometry remains untouched.
   appendSection('hero', `.dsh-fairy-hero-host{width:100vw}.dsh-fairy-hero-projection-svg{top:-2px;transform:translateX(2px)}.dsh-fairy-hero-sub{transform:translateY(-8px)}.dsh-fairy-hero-sub::before,.dsh-fairy-hero-sub::after{width:240px}@media(max-width:520px){.dsh-fairy-hero-projection-svg{top:1px}.dsh-fairy-hero-sub{transform:translateX(2px)}.dsh-fairy-hero-sub::before,.dsh-fairy-hero-sub::after{width:170px}}`);
+  // The question, approval and plan-review surfaces are injected into the
+  // conversation.composer slot, i.e. inside the dock that this plugin turns into
+  // a fixed, pointer-events:none, z-index:1 element. As descendants they inherit
+  // that non-interactivity, paint below the transcript's sticky code banners, and
+  // are laid out downward from a dock that hangs off the bottom of the viewport,
+  // so their cards end up clipped and unclickable. Restore interaction, stacking
+  // and an on-screen position for these three surfaces only, anchored to the
+  // viewport so the centred card stays fully visible whatever the dock does.
+  appendSection('composer', `html[data-dsh-fairy-visual] [data-question-key],html[data-dsh-fairy-visual] [data-approval-key],html[data-dsh-fairy-visual] [data-plan-review-key]{position:fixed!important;left:50%!important;right:auto!important;bottom:calc(var(--dsh-fairy-composer-dock-height,132px) + 12px)!important;top:auto!important;transform:translateX(-50%)!important;width:min(640px,calc(100vw - 32px))!important;min-width:0!important;max-width:calc(100vw - 32px)!important;max-height:min(70vh,calc(100dvh - 180px))!important;overflow-y:auto!important;overflow-x:hidden!important;z-index:60!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important}html[data-dsh-fairy-visual] [data-question-key] *,html[data-dsh-fairy-visual] [data-approval-key] *,html[data-dsh-fairy-visual] [data-plan-review-key] *{pointer-events:auto!important}html[data-dsh-fairy-visual] [data-question-scroll],html[data-dsh-fairy-visual] [data-approval-scroll],html[data-dsh-fairy-visual] [data-plan-review-scroll]{min-height:0!important;overflow-y:auto!important}`);
+  // The official "recommended" badge paints its label with
+  // var(--dsw-alias-button-info-fill) over var(--dsw-specific-sidebar-nav-item-active-accent).
+  // The HDD theme redefines that sidebar accent to #267fc4 -- luminance .196 -- while
+  // leaving the info fill at the stock light blue #4176e6 -- luminance .198. The two
+  // collapse to a contrast ratio of ~1.01, so the badge text disappears entirely.
+  // Rebinding the accent *inside the popups only* restores a stock dark-blue badge fill
+  // without touching the sidebar, which shares the token; the label goes white because
+  // at 11px the info-fill blue would still only reach ~3.2:1.
+  appendSection('composer', `html[data-dsh-fairy-visual] [data-question-key],html[data-dsh-fairy-visual] [data-approval-key],html[data-dsh-fairy-visual] [data-plan-review-key]{--dsw-specific-sidebar-nav-item-active-accent:#14304d!important}html[data-dsh-fairy-visual] [data-question-key] [class*="_badge"],html[data-dsh-fairy-visual] [data-approval-key] [class*="_badge"],html[data-dsh-fairy-visual] [data-plan-review-key] [class*="_badge"]{background:var(--dsw-specific-sidebar-nav-item-active-accent)!important;color:#fff!important}`);
   el.textContent = cssSections.map(({ css }) => css).join('');
 
   (document.head || document.documentElement).appendChild(el);

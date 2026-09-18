@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
-const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
+// Normalize CRLF to LF so newline-sensitive source assertions hold on Windows.
+// The upstream checkout carries CRLF line endings there, while the patterns
+// below were authored against LF, which made several tests fail only on Windows.
+const read = async (path) => (await readFile(new URL(path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
 const [clientEntrySource, constantsSource, utilsSource, styleSource, composerDockSource, composerMarkerSource, composerMaterialSource, composerNativeSource, composerWorkspaceSource, composerResizeSource, composerInsetSource, composerSessionSource, composerAnchorSource, toBottomSource, adapterSource, lifecycleSource, controllerLifecycleSource, modeThemeSource, stageLifecycleSource, scrollbarSource, semanticMarkerSource, geometrySource, mascotSource, brandGeometrySource, powerModeSource, surfaceUtilsSource, visualTransitionsSource, serverSource, contractTypes] = await Promise.all([
   read('../src/client/index.js'),
   read('../src/client/constants.js'),
@@ -110,7 +113,11 @@ test('keeps module ownership boundaries and official slot declarations', () => {
   assert.match(clientSource, /settings\.section/);
   assert.doesNotMatch(clientSource, /sessions\.clear\(\)|workspaces\.startSession\(\)|STARTUP_RESET_ATTR/);
   assert.doesNotMatch(source, /fairy-voice|127\.0\.0\.1:9880|agent\/pre-step/);
-  assert.match(serverSource, /settingsNamespace\(settingsNamespaceName\)/);
+  // dsh-settings >= 0.1.2 dropped the settingsNamespace() factory. The host must
+  // register the plain namespace string, which the package validates itself.
+  assert.match(serverSource, /settings\.register\(FAIRY_VISUAL_SETTINGS_NAMESPACE, FairyVisualSettings\)/);
+  assert.match(serverSource, /settings\.register\(FAIRY_IDENTITY_SETTINGS_NAMESPACE, FairyIdentitySettings\)/);
+  assert.doesNotMatch(serverSource, /settingsNamespace\s*\(/);
   assert.match(contractTypes, /interface FairyVisualSettings/);
 });
 
@@ -830,8 +837,11 @@ test('cleans visual document state, observers, timers, and the mascot node', () 
   assert.doesNotMatch(clientSource, /window\.removeEventListener\('resize', scheduleContentFade\);\s*window\.removeEventListener\('resize', scheduleContentFade\)/);
 });
 
-test('anchors the original content mask to the stationary conversation viewport', () => {
-  assert.match(clientSource, /const nextSurface = conversationScroll\(conversation\(document\)\)/);
+test('anchors the original content mask to the transcript surface, never the composer viewport', () => {
+  // Masking [data-conversation-scroll] also masked the composer it contains,
+  // which punched the input text out through the radial gradient. Prefer the
+  // chat-flow transcript node and keep the scroll container as a fallback.
+  assert.match(clientSource, /const nextSurface = chatFlows\(document\)\[0\] \|\| conversationScroll\(conversation\(document\)\)/);
   assert.match(clientSource, /const hasActiveChatFlow = chatFlows\(document\)\.some/);
   assert.match(clientSource, /const eyeBoundary = eye\.querySelector\('\.dsh-fairy-outer-disc'\) \|\| eye/);
   assert.match(clientSource, /const eyeRect = eyeBoundary\.getBoundingClientRect\(\)/);

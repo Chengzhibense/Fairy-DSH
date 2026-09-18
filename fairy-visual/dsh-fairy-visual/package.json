@@ -24,15 +24,16 @@
     }
   },
   "dependencies": {
-    "@deepseek-ai/dsh-settings": "0.1.1-rc.2",
-    "@deepseek-ai/schemastery": "3.18.1",
+    "@deepseek-ai/dsh-settings": "^0.1.5-rc.2",
+    "@deepseek-ai/schemastery": "^3.18.2",
     "dsh-fairy-contracts": "link:../../fairy-contracts"
   },
   "devDependencies": {
-    "tsdown": "^0.22.14"
+    "tsdown": "0.22.14"
   },
   "scripts": {
-    "bundle": "tsdown && cp lib/index.iife.js lib/client.js.tmp && mv -f lib/client.js.tmp lib/client.js && cp src/index.js lib/index.js.tmp && mv -f lib/index.js.tmp lib/index.js",
+    "build": "tsdown && node scripts/sync-build.mjs",
+    "bundle": "tsdown && node scripts/sync-build.mjs",
     "test": "node --test test/*.test.js",
     "verify:build": "node ../../fairy-system/verify-build.js",
     "watch": "tsdown --watch"

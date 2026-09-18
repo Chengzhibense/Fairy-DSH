@@ -462,7 +462,13 @@ const diagnostics = createFairyDiagnostics('dsh-fairy-visual');
         const asFadePercent = (ratio) => Math.round(ratio * 1000) / 10 + '%';
         const applyContentFade = () => {
           const eye = stageNode.querySelector('#dsh-fairy-root');
-          const nextSurface = conversationScroll(conversation(document));
+          // The fade mask must land on the transcript surface only. The
+          // conversation-scroll container also holds the composer seat and the
+          // dock, so masking it punched the input text out through the radial
+          // gradient (the "invisible text in dark theme" report). [data-chat-flow]
+          // is the element that actually holds the messages, so prefer it and
+          // keep the scroll container only as a fallback.
+          const nextSurface = chatFlows(document)[0] || conversationScroll(conversation(document));
           if (!visibleRef.current) return clearContentFade(true);
           if (!eye || !nextSurface) return clearContentFade();
           const hasActiveChatFlow = chatFlows(document).some((flow) => {

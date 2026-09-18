@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { settingsNamespace } from '@deepseek-ai/dsh-settings';
 import { FAIRY_VISUAL_SETTINGS_NAMESPACE } from 'dsh-fairy-contracts';
 import { FairyVisualSettings } from '../src/index.js';
 
@@ -19,11 +18,17 @@ function schemaFields() {
   }));
 }
 
-test('settings package exposes the namespace factory used by the host registration', () => {
+// dsh-settings >= 0.1.2 no longer exports a namespace factory: register() takes
+// the raw namespace string and validates it against /^[a-z][a-z0-9-]*$/ itself.
+// Guard the shape the host now depends on instead of the removed wrapper.
+const NAMESPACE_PATTERN = /^[a-z][a-z0-9-]*$/;
+
+test('settings namespace is a register-compatible plain string', () => {
   assert.equal(namespace, 'fairy-visual');
-  assert.equal(settingsNamespace(namespace), namespace);
-  assert.throws(() => settingsNamespace('FairyVisual'), /must match/);
-  assert.throws(() => settingsNamespace('fairy_visual'), /must match/);
+  assert.equal(typeof namespace, 'string');
+  assert.match(namespace, NAMESPACE_PATTERN);
+  assert.doesNotMatch('FairyVisual', NAMESPACE_PATTERN);
+  assert.doesNotMatch('fairy_visual', NAMESPACE_PATTERN);
 });
 
 test('Visual settings schema keeps the registered fields, defaults, and bounds', () => {

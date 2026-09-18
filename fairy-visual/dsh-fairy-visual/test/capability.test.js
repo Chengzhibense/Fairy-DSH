@@ -3,10 +3,12 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
-const packageRoot = new URL('..', import.meta.url);
-const sourceRoot = new URL('../src/client/', import.meta.url);
+// A file: URL's .pathname is POSIX-shaped ('/C:/...'), which `join` then turns
+// into 'C:\C:\...' on Windows. Convert to a real platform path instead.
+const sourceRoot = fileURLToPath(new URL('../src/client/', import.meta.url));
 const adapterSource = readFileSync(new URL('../src/client/dom-adapter.js', import.meta.url), 'utf8');
 const require = createRequire(import.meta.url);
 const clientDomContracts = require('../../../fairy-contracts/client-dom.cjs');
@@ -115,7 +117,7 @@ test('keeps official data-slot and data-phase queries inside dom-adapter', () =>
   const directOfficialQuery = /querySelector(?:All)?\([^\n]*(?:data-slot|data-phase|data-composer|data-conversation-scroll|data-input-scroll|data-chat-flow)/;
   const files = readdirSync(sourceRoot, { withFileTypes: true })
     .filter((entry) => entry.isFile() && entry.name.endsWith('.js') && entry.name !== 'dom-adapter.js')
-    .map((entry) => join(sourceRoot.pathname, entry.name));
+    .map((entry) => join(sourceRoot, entry.name));
 
   const offenders = files.filter((file) => directOfficialQuery.test(readFileSync(file, 'utf8')));
   assert.deepEqual(offenders, []);
