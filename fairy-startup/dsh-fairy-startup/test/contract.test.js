@@ -134,3 +134,25 @@ test('keeps a blank restored session as the fresh-document state', () => {
   plugin.apply(ctx);
   assert.equal(starts, 0);
 });
+
+test('degrades cleanly when a desktop bridge omits clearMain and startSession', () => {
+  const definition = loadDefinition();
+  const plugin = definition.factory();
+  const ctx = {
+    sessions: {
+      list: {
+        getSnapshot: () => ({
+          phase: 'ready',
+          byId: { s1: { id: 's1', blank: false, retainedBy: { mainView: 1 } } },
+        }),
+        subscribe() { return () => {}; },
+      },
+    },
+    workspaces: {
+      list: { getSnapshot: () => ({ phase: 'ready' }), subscribe() { return () => {}; } },
+    },
+    uiWorkspace: { mainReference: { sessionId: 's1' } },
+    effect(factory) { factory(); },
+  };
+  assert.doesNotThrow(() => plugin.apply(ctx));
+});

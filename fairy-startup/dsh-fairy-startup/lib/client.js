@@ -93,8 +93,9 @@ module.exports = { FAIRY_LOG_PREFIX, createFairyDiagnostics };
           started = true;
           stop();
           try {
-            uiWorkspace.clearMain();
-            uiWorkspace.startSession();
+            if (typeof uiWorkspace.clearMain === 'function') uiWorkspace.clearMain();
+            if (typeof uiWorkspace.startSession === 'function') uiWorkspace.startSession();
+            else diagnostics.warn('session.start-fresh.unsupported', { surface: 'client' });
           } catch (error) {
             diagnostics.error('session.start-fresh', error, {});
           }
@@ -114,7 +115,8 @@ module.exports = { FAIRY_LOG_PREFIX, createFairyDiagnostics };
           // No official restore is coming (for example, it already settled
           // before this plugin loaded). Without a target this opens a fresh
           // Session in the current or most recent Workspace, or stays on Hero.
-          uiWorkspace.startSession();
+          if (typeof uiWorkspace.startSession === 'function') uiWorkspace.startSession();
+          else diagnostics.warn('session.start-fresh.unsupported', { surface: 'client' });
         } catch (error) {
           diagnostics.error('session.start-fresh', error, {});
         }
@@ -140,7 +142,8 @@ module.exports = { FAIRY_LOG_PREFIX, createFairyDiagnostics };
       // Clear the persisted selection before the official restore settles so a
       // previous conversation never flashes on a fresh document.
       try {
-        ctx.uiWorkspace.clearMain();
+        if (typeof ctx.uiWorkspace.clearMain === 'function') ctx.uiWorkspace.clearMain();
+        else diagnostics.warn('session.clear-restored.unsupported', { surface: 'client' });
       } catch (error) {
         root.removeAttribute(STARTUP_RESET_ATTR);
         diagnostics.error('session.clear-restored', error, {});
