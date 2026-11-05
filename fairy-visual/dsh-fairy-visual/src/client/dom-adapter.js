@@ -26,6 +26,10 @@ const ARIA_LABELS = Object.freeze({
   newSession: Object.freeze({ zh: Object.freeze(['新建会话']), en: Object.freeze(['New session', 'New Session']) }),
   openSidebar: Object.freeze({ zh: Object.freeze(['打开侧边栏']), en: Object.freeze(['Open sidebar']) }),
   collapseSidebar: Object.freeze({ zh: Object.freeze(['收起侧边栏']), en: Object.freeze(['Collapse sidebar']) }),
+  rightSidebarToggle: Object.freeze({
+    zh: Object.freeze(['打开右侧边栏', '收起右侧边栏']),
+    en: Object.freeze(['Open right sidebar', 'Collapse right sidebar']),
+  }),
   send: Object.freeze({ zh: Object.freeze(['发送消息', '停止生成', '停止']), en: Object.freeze(['Send message', 'Stop generating', 'Stop']) }),
   sendOnly: Object.freeze({ zh: Object.freeze(['发送消息']), en: Object.freeze(['Send message']) }),
   context: Object.freeze({ zh: Object.freeze(['上下文']), en: Object.freeze(['Context']) }),
@@ -101,7 +105,10 @@ const OFFICIAL_SELECTORS = Object.freeze({
   rootSurface: '[data-slot="root"]',
   sidebar: '[data-slot="sidebar"]',
   sidebarResizeHandle: '[data-side="sidebar"]',
-  conversation: '[data-slot="conversation"]',
+  // 0.2.x mounts the conversation surface as the current phase root instead
+  // of a separate `conversation` slot. The phase element owns the composer,
+  // scroll containers, and the session header.
+  conversation: '[data-phase="hero"], [data-phase="active"]',
   shellOverlay: '[data-slot="shell.overlay"]',
   settingsDialog: '[data-slot="sidebar.settings"] [role="dialog"]',
   phaseHero: '[data-phase="hero"]',
@@ -109,7 +116,8 @@ const OFFICIAL_SELECTORS = Object.freeze({
   phaseAny: '[data-phase]',
   composerSeat: '[data-composer-seat]',
   composerCard: '[data-composer-card="true"]',
-  composerTextarea: 'textarea',
+  composerTextarea: '[data-composer-input="true"], textarea',
+  composerPlaceholder: '[data-composer-placeholder="true"]',
   composerAttachmentsSlot: `[data-slot="${OFFICIAL_SLOT_VALUES.composerAttachments}"]`,
   conversationScroll: '[data-conversation-scroll]',
   inputScroll: '[data-input-scroll]',
@@ -122,6 +130,7 @@ const OFFICIAL_SELECTORS = Object.freeze({
   sidebarBrandMark: '[data-slot="sidebar.brand.mark"]',
   openSidebar: ariaLabelSelector('openSidebar', { base: 'body > #root > [data-slot="root"] button' }),
   collapseSidebar: ariaLabelSelector('collapseSidebar', { base: 'body > #root > [data-slot="root"] button' }),
+  rightSidebarToggle: ariaLabelSelector('rightSidebarToggle', { base: 'button' }),
   newSession: ariaLabelSelector('newSession', { base: 'button' }),
   sessionHeader: '[data-slot="conversation.session.header"]',
   sessionHeaderActions: '[data-slot="conversation.session.header.actions"]',
@@ -286,6 +295,7 @@ function settingsDialog(doc = document) { return officialNode('settingsDialog', 
 function sidebarResizeHandle(scope = document) { return officialNode('sidebarResizeHandle', scope); }
 function sidebarOpenControl(doc = document) { return officialNode('openSidebar', doc); }
 function sidebarCollapseControl(doc = document) { return officialNode('collapseSidebar', doc); }
+function rightSidebarToggle(doc = document) { return officialNode('rightSidebarToggle', doc); }
 const reportedFuzzyMatches = new Set();
 
 function findByAriaLabelFuzzy(scope, { role, labels }) {
@@ -325,11 +335,17 @@ function sidebarBrandButton(scope = document) {
 }
 function phase(scope = document, name) {
   if (!scope) return null;
-  if (name === 'hero') return officialNode('phaseHero', scope);
-  if (name === 'active') return officialNode('phaseActive', scope);
-  return officialNode('phaseActive', scope) || officialNode('phaseHero', scope);
+  const selector = name === 'hero'
+    ? OFFICIAL_SELECTORS.phaseHero
+    : name === 'active'
+      ? OFFICIAL_SELECTORS.phaseActive
+      : `${OFFICIAL_SELECTORS.phaseHero}, ${OFFICIAL_SELECTORS.phaseActive}`;
+  return scope.matches?.(selector) ? scope : officialNode(name === 'hero' ? 'phaseHero' : name === 'active' ? 'phaseActive' : 'phaseAny', scope);
 }
-function anyPhase(scope = document) { return officialNode('phaseAny', scope); }
+function anyPhase(scope = document) {
+  if (scope?.matches?.(OFFICIAL_SELECTORS.phaseAny)) return scope;
+  return officialNode('phaseAny', scope);
+}
 function sessionHeader(scope) { return officialNode('sessionHeader', scope); }
 function sessionHeaderActions(scope) { return officialNode('sessionHeaderActions', scope); }
 function sessionHeaderUtilities(scope) { return officialNode('sessionHeaderUtilities', scope); }
@@ -349,6 +365,7 @@ function headerElement(scope) { return officialNode('headerElement', scope); }
 function composerSeat(scope = document) { return officialNode('composerSeat', scope); }
 function composerCard(scope) { return officialNode('composerCard', scope); }
 function composerTextarea(scope) { return officialNode('composerTextarea', scope); }
+function composerPlaceholder(scope) { return officialNode('composerPlaceholder', scope); }
 function composerAttachmentsSlot(scope) {
   const selector = OFFICIAL_NODE_CONTRACTS.composerAttachmentsSlot.selector;
   return [...(scope?.children || [])].find((node) => (
@@ -515,6 +532,7 @@ module.exports = {
   sidebarResizeHandle,
   sidebarOpenControl,
   sidebarCollapseControl,
+  rightSidebarToggle,
   sessionTree,
   sessionItems,
   expandedSessionItems,
@@ -531,6 +549,7 @@ module.exports = {
   composerSeat,
   composerCard,
   composerTextarea,
+  composerPlaceholder,
   composerAttachmentsSlot,
   conversationScroll,
   conversationScrolls,

@@ -50,7 +50,9 @@ test('private JSON writes are atomic, unique, and permission-restricted', async 
     const value = JSON.parse(await readFile(file, 'utf8'));
     assert.equal(value.version, 1);
     assert.ok(['first', 'second'].includes(value.value));
-    assert.equal((await stat(file)).mode & 0o777, 0o600);
+    // Windows has no POSIX mode bits; libuv reports 0o666 regardless of the
+    // requested mode. Keep the assertion on platforms that enforce it.
+    if (process.platform !== 'win32') assert.equal((await stat(file)).mode & 0o777, 0o600);
     assert.deepEqual((await readdir(directory)).filter((name) => name.endsWith('.tmp')), []);
   } finally {
     await rm(directory, { recursive: true, force: true });

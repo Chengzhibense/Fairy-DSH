@@ -206,7 +206,7 @@ window.__ModuleLoader__.load({
 		POWER_TOGGLE_HEIGHT = 22;
 		DEFAULT = {
 			version: 2,
-			enabled: false,
+			enabled: true,
 			theme: "dark",
 			mascotVisible: true,
 			mascotScale: 1,
@@ -363,6 +363,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		appendSection("shared-surfaces", `html[data-dsh-fairy-visual] .dsh-fairy-chat-content-anchored{display:flex!important;flex-direction:column!important;justify-content:flex-end!important;min-height:var(--dsh-fairy-chat-anchor-min-height)!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] body{--dsw-specific-sidebar-fill:transparent!important;--dsw-specific-sidebar-nav-item-hover:#0e243d!important;--dsw-specific-sidebar-nav-item-active:#143553!important;--dsw-specific-sidebar-nav-item-active-accent:#267fc4!important;--dsw-specific-input-major:#0a1c30!important;--dsw-specific-menu:#0e243d!important;--dsw-specific-selector:#0e243d!important;--dsw-specific-bubble:#103052!important;--dsw-specific-tip:#0e243d!important;--dsw-alias-button-elevated-fill:#103052!important;--dsw-alias-button-floating-fill:#103052!important;--dsw-alias-button-floating-hover:#17456f!important;--dsw-alias-button-ghost-active-fill:#17456f!important;--dsw-alias-markdown-citation:#103052!important;--dsw-alias-markdown-code-block:#0a1c30!important;--dsw-alias-markdown-code-block-banner:#0a1c30!important;--dsw-alias-markdown-inline-code:#103052!important;--dsw-alias-markdown-tag:#103052!important;--dsw-alias-markdown-code-segment-selected:#103052!important;--dsw-alias-markdown-code-segment-unselected:#0a1c30!important;--dsw-alias-markdown-placeholder:#0e243d!important;--dsw-alias-scrollbar-bg-l2:#143553!important;--dsw-alias-scrollbar-hover-l2:#267fc4!important}html[data-dsh-fairy-visual] [data-composer-card="true"]{background:#0a1c30!important;border-color:rgba(126,220,255,.28)!important}html[data-dsh-fairy-visual] [data-composer-card="true"] textarea{color:#e8f8ff!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-seat="true"]{background:transparent!important;background-color:transparent!important;background-image:none!important}`);
+		appendSection("composer-question", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-question="true"] [data-question-key]{pointer-events:auto!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-question="true"] .dsh-fairy-composer-resizer{display:none!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"]{position:fixed!important;bottom:0!important;box-sizing:border-box!important;z-index:1!important;display:flex!important;flex-direction:column!important;min-width:0!important;max-width:none!important;padding:0!important;background:transparent!important;pointer-events:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-slot="conversation.composer.dock"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-bar-root="true"]{box-sizing:border-box!important;width:100%!important;max-width:none!important;height:100%!important;min-height:0!important;padding:0!important;align-items:stretch!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(176px,max-content) minmax(0,1fr) minmax(176px,max-content)!important;grid-template-rows:auto minmax(0,1fr)!important;align-items:stretch!important;gap:0 12px!important;width:100%!important;max-width:none!important;height:100%!important;min-height:0!important;margin:0!important;padding:10px 12px!important;border-radius:0!important;pointer-events:auto!important;overflow:hidden!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll]{grid-column:2!important;grid-row:2!important;min-width:0!important;min-height:0!important;height:auto!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-accessory="true"]{grid-column:1 / -1!important;grid-row:1!important;min-width:0!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-row="true"]{display:contents!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-trailing="true"]{display:contents!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"]>*{grid-column:1!important;grid-row:2!important;align-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{grid-column:3!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-output-control="true"]{grid-column:3!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{grid-column:2!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer{position:absolute;z-index:20;inset:0 0 auto;height:12px;cursor:ns-resize;pointer-events:auto;touch-action:none}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer[data-dragging="true"]{cursor:grabbing}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll] textarea{max-height:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"] *{min-width:0}@media(max-width:900px){html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{grid-template-columns:minmax(132px,max-content) minmax(0,1fr) minmax(132px,max-content)!important}}@media(max-width:620px){html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-accessory="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"]>*:not([data-dsh-fairy-composer-send-control="true"]),html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-output-control="true"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{grid-column:1!important;grid-row:1!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{justify-self:end!important;align-self:end!important}}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"]{--dsh-composer-top-highlight:rgba(255,255,255,.13);--dsh-composer-top-face:rgba(255,255,255,.045);--dsh-composer-top-shade:rgba(0,0,0,.20);box-shadow:0 -7px 15px -11px rgba(0,0,0,.32),0 -22px 46px -20px rgba(0,0,0,.17)!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"]::before{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]::before{content:'';position:absolute;z-index:3;top:0;right:0;left:0;height:9px;pointer-events:none;background:linear-gradient(180deg,var(--dsh-composer-top-highlight) 0 .7px,var(--dsh-composer-top-face) 1.4px,var(--dsh-composer-top-shade) 2.6px,rgba(0,0,0,.07) 4px,transparent 9px)}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-composer-dock="true"]{--dsh-composer-top-highlight:rgba(255,255,255,.62);--dsh-composer-top-face:rgba(255,255,255,.20);--dsh-composer-top-shade:rgba(58,68,78,.18);box-shadow:0 -7px 15px -11px rgba(49,58,67,.21),0 -24px 50px -20px rgba(58,68,78,.12)!important}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]::before{background:linear-gradient(180deg,var(--dsh-composer-top-highlight) 0 .7px,var(--dsh-composer-top-face) 1.4px,var(--dsh-composer-top-shade) 2.6px,rgba(58,68,78,.055) 4px,transparent 9px)}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-stack="true"]{position:relative!important;display:block!important;width:100%!important;height:100%!important;min-height:0!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-chrome="true"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-workspace="true"]{position:absolute!important;z-index:4!important;left:12px!important;top:8px!important;margin:0!important;padding:0!important;display:flex!important;align-items:center!important;gap:1px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-bar-root="true"]{position:absolute!important;inset:0!important}`);
@@ -511,6 +512,10 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				zh: Object.freeze(["收起侧边栏"]),
 				en: Object.freeze(["Collapse sidebar"])
 			}),
+			rightSidebarToggle: Object.freeze({
+				zh: Object.freeze(["打开右侧边栏", "收起右侧边栏"]),
+				en: Object.freeze(["Open right sidebar", "Collapse right sidebar"])
+			}),
 			send: Object.freeze({
 				zh: Object.freeze([
 					"发送消息",
@@ -619,7 +624,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			rootSurface: "[data-slot=\"root\"]",
 			sidebar: "[data-slot=\"sidebar\"]",
 			sidebarResizeHandle: "[data-side=\"sidebar\"]",
-			conversation: "[data-slot=\"conversation\"]",
+			conversation: "[data-phase=\"hero\"], [data-phase=\"active\"]",
 			shellOverlay: "[data-slot=\"shell.overlay\"]",
 			settingsDialog: "[data-slot=\"sidebar.settings\"] [role=\"dialog\"]",
 			phaseHero: "[data-phase=\"hero\"]",
@@ -627,7 +632,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			phaseAny: "[data-phase]",
 			composerSeat: "[data-composer-seat]",
 			composerCard: "[data-composer-card=\"true\"]",
-			composerTextarea: "textarea",
+			composerTextarea: "[data-composer-input=\"true\"], textarea",
+			composerPlaceholder: "[data-composer-placeholder=\"true\"]",
 			composerAttachmentsSlot: `[data-slot="${OFFICIAL_SLOT_VALUES.composerAttachments}"]`,
 			conversationScroll: "[data-conversation-scroll]",
 			inputScroll: "[data-input-scroll]",
@@ -640,6 +646,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			sidebarBrandMark: "[data-slot=\"sidebar.brand.mark\"]",
 			openSidebar: ariaLabelSelector("openSidebar", { base: "body > #root > [data-slot=\"root\"] button" }),
 			collapseSidebar: ariaLabelSelector("collapseSidebar", { base: "body > #root > [data-slot=\"root\"] button" }),
+			rightSidebarToggle: ariaLabelSelector("rightSidebarToggle", { base: "button" }),
 			newSession: ariaLabelSelector("newSession", { base: "button" }),
 			sessionHeader: "[data-slot=\"conversation.session.header\"]",
 			sessionHeaderActions: "[data-slot=\"conversation.session.header.actions\"]",
@@ -909,6 +916,9 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		function sidebarCollapseControl(doc = document) {
 			return officialNode("collapseSidebar", doc);
 		}
+		function rightSidebarToggle(doc = document) {
+			return officialNode("rightSidebarToggle", doc);
+		}
 		const reportedFuzzyMatches = /* @__PURE__ */ new Set();
 		function findByAriaLabelFuzzy(scope, { role, labels }) {
 			const candidates = queryAll(scope, `[role="${role}"]`);
@@ -950,11 +960,11 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		}
 		function phase(scope = document, name) {
 			if (!scope) return null;
-			if (name === "hero") return officialNode("phaseHero", scope);
-			if (name === "active") return officialNode("phaseActive", scope);
-			return officialNode("phaseActive", scope) || officialNode("phaseHero", scope);
+			const selector = name === "hero" ? OFFICIAL_SELECTORS.phaseHero : name === "active" ? OFFICIAL_SELECTORS.phaseActive : `${OFFICIAL_SELECTORS.phaseHero}, ${OFFICIAL_SELECTORS.phaseActive}`;
+			return scope.matches?.(selector) ? scope : officialNode(name === "hero" ? "phaseHero" : name === "active" ? "phaseActive" : "phaseAny", scope);
 		}
 		function anyPhase(scope = document) {
+			if (scope?.matches?.(OFFICIAL_SELECTORS.phaseAny)) return scope;
 			return officialNode("phaseAny", scope);
 		}
 		function sessionHeader(scope) {
@@ -980,6 +990,9 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		}
 		function composerTextarea(scope) {
 			return officialNode("composerTextarea", scope);
+		}
+		function composerPlaceholder(scope) {
+			return officialNode("composerPlaceholder", scope);
 		}
 		function composerAttachmentsSlot(scope) {
 			const selector = OFFICIAL_NODE_CONTRACTS.composerAttachmentsSlot.selector;
@@ -1156,6 +1169,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			sidebarResizeHandle,
 			sidebarOpenControl,
 			sidebarCollapseControl,
+			rightSidebarToggle,
 			sessionTree,
 			sessionItems,
 			expandedSessionItems,
@@ -1172,6 +1186,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			composerSeat,
 			composerCard,
 			composerTextarea,
+			composerPlaceholder,
 			composerAttachmentsSlot,
 			conversationScroll,
 			conversationScrolls,
@@ -2309,6 +2324,60 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 	}));
 
 //#endregion
+//#region src/client/chat-tail-follower.js
+	var require_chat_tail_follower = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+		const FOLLOWING_ATTR = "data-chat-following-tail";
+		const SCROLL_SELECTOR = "[data-conversation-scroll]";
+		function createChatTailFollower({ getFlowNodes, shouldFollow, requestFrame, cancelFrame, isDisposed }) {
+			let frame = 0;
+			let resizeObserver = null;
+			let resizeNodes = /* @__PURE__ */ new Set();
+			const bindResizeNodes = () => {
+				if (typeof ResizeObserver !== "function") return;
+				const next = new Set((getFlowNodes?.() || []).filter(Boolean));
+				if (next.size === resizeNodes.size && [...next].every((node) => resizeNodes.has(node))) return;
+				resizeObserver?.disconnect();
+				resizeObserver = new ResizeObserver(schedule);
+				next.forEach((node) => resizeObserver.observe(node));
+				resizeNodes = next;
+			};
+			const sync = () => {
+				frame = 0;
+				bindResizeNodes();
+				(getFlowNodes?.() || []).forEach((flow) => {
+					if (!flow?.isConnected) return;
+					if (!flow.closest?.(`[${FOLLOWING_ATTR}]`) && !shouldFollow?.()) return;
+					const scroll = flow.closest?.(SCROLL_SELECTOR);
+					if (!scroll?.isConnected) return;
+					const bottom = Math.max(0, scroll.scrollHeight - scroll.clientHeight);
+					if (Math.abs(scroll.scrollTop - bottom) > 1) scroll.scrollTop = bottom;
+				});
+			};
+			function schedule() {
+				if (!frame && !isDisposed?.()) frame = requestFrame(sync);
+			}
+			const flush = () => {
+				if (frame) cancelFrame(frame);
+				frame = 0;
+				sync();
+			};
+			const clear = () => {
+				if (frame) cancelFrame(frame);
+				frame = 0;
+				resizeObserver?.disconnect();
+				resizeObserver = null;
+				resizeNodes.clear();
+			};
+			return {
+				schedule,
+				flush,
+				clear
+			};
+		}
+		module.exports = { createChatTailFollower };
+	}));
+
+//#endregion
 //#region src/client/to-bottom-positioner.js
 	var require_to_bottom_positioner = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		const SLOT_MARKER = "data-dsh-fairy-to-bottom-slot";
@@ -3145,6 +3214,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		const { captureWorkspaceTemplate: captureWorkspaceTemplateModule, ensureWorkspaceProjection: ensureWorkspaceProjectionModule, syncWorkspaceProjectionMode: syncWorkspaceProjectionModeModule } = require_composer_workspace_projection();
 		const { createInsetSynchronizer } = require_composer_inset_synchronizer();
 		const { createChatContentAnchor } = require_chat_content_anchor();
+		const { createChatTailFollower } = require_chat_tail_follower();
 		const { createToBottomPositioner } = require_to_bottom_positioner();
 		const { createComposerSessionResolver } = require_composer_session_rebinding();
 		const { createResizeController, HEIGHT_MIN, HEIGHT_MAX, CONTENT_MIN } = require_composer_resize_controller();
@@ -3175,7 +3245,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			"data-dsh-fairy-composer-access-control",
 			"data-dsh-fairy-composer-workspace-control",
 			"data-dsh-fairy-composer-mode-control",
-			"data-dsh-fairy-model-menu-open"
+			"data-dsh-fairy-model-menu-open",
+			"data-dsh-fairy-composer-question"
 		];
 		const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 		function clearMarker(node, name) {
@@ -3199,6 +3270,11 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			let observedHeaderActions = null;
 			let seat = null;
 			let card = null;
+			let questionPanel = null;
+			let questionResizeObserver = null;
+			let pendingQuestionExit = false;
+			let resumeTail = false;
+			let resumeTailScrollNodes = /* @__PURE__ */ new Set();
 			let clearControls = () => {};
 			let mascotScaleBase = null;
 			let mascotAnimationSpeedBase = null;
@@ -3219,13 +3295,52 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				const viewportHeight = window.visualViewport?.height || window.innerHeight;
 				return Math.max(HEIGHT_MIN, Math.min(HEIGHT_MAX, viewportHeight - CONTENT_MIN));
 			};
-			const renderedHeight = () => attachmentDockHeight(height, attachmentRailHeight(attachmentSlot(card)), HEIGHT_MIN, maximumDockHeight());
+			const renderedHeight = () => {
+				if (questionPanel?.isConnected) {
+					const viewportHeight = window.visualViewport?.height || window.innerHeight;
+					const naturalHeight = Math.max(questionPanel.getBoundingClientRect().height, questionPanel.scrollHeight);
+					return clamp(Math.ceil(naturalHeight), HEIGHT_MIN, Math.max(HEIGHT_MIN, viewportHeight));
+				}
+				return attachmentDockHeight(height, attachmentRailHeight(attachmentSlot(card)), HEIGHT_MIN, maximumDockHeight());
+			};
 			const schedule = () => {
 				if (!frame && !disposed) frame = domObserverManager.scheduleFrame(layoutFrameKey, sync);
 			};
 			const scheduleStructure = () => {
 				if (!structureFrame && !disposed) structureFrame = domObserverManager.scheduleFrame(structureFrameKey, bind);
 			};
+			const clearResumeTail = () => {
+				resumeTail = false;
+				pendingQuestionExit = false;
+				resumeTailScrollNodes.forEach((node) => {
+					node.removeEventListener("wheel", onResumeTailWheel);
+					node.removeEventListener("touchstart", clearResumeTail);
+				});
+				resumeTailScrollNodes.clear();
+				document.removeEventListener("keydown", onResumeTailKeydown, true);
+			};
+			const resumeTailFollow = () => {
+				clearResumeTail();
+				resumeTail = true;
+				resumeTailScrollNodes = new Set(conversationScrolls(conversation).filter(Boolean));
+				resumeTailScrollNodes.forEach((node) => {
+					node.addEventListener("wheel", onResumeTailWheel, { passive: true });
+					node.addEventListener("touchstart", clearResumeTail, { passive: true });
+				});
+				document.addEventListener("keydown", onResumeTailKeydown, true);
+				schedule();
+			};
+			function onResumeTailWheel(event) {
+				if (event.deltaY < 0) clearResumeTail();
+			}
+			function onResumeTailKeydown(event) {
+				if (![
+					"ArrowUp",
+					"PageUp",
+					"Home"
+				].includes(event.key)) return;
+				if ((event.target?.nodeType === 1 ? event.target : event.target?.parentElement)?.closest?.("[data-conversation-scroll]")) clearResumeTail();
+			}
 			const bindHeaderObserver = () => {
 				const nextHeaderActions = sessionHeaderActions(conversation);
 				if (nextHeaderActions === observedHeaderActions) return;
@@ -3249,6 +3364,13 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			const contentAnchor = createChatContentAnchor({
 				getFlowNodes: () => chatFlows(conversation),
 				getComposerNode: () => seat,
+				requestFrame: (callback) => requestAnimationFrame(callback),
+				cancelFrame: (id) => cancelAnimationFrame(id),
+				isDisposed: () => disposed
+			});
+			const tailFollower = createChatTailFollower({
+				getFlowNodes: () => chatFlows(conversation),
+				shouldFollow: () => resumeTail,
 				requestFrame: (callback) => requestAnimationFrame(callback),
 				cancelFrame: (id) => cancelAnimationFrame(id),
 				isDisposed: () => disposed
@@ -3278,12 +3400,16 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			};
 			const restoreSeat = ({ clearWorkspaceTemplate = false } = {}) => {
 				contentAnchor.clear();
+				clearResumeTail();
+				tailFollower.clear();
 				toBottomPositioner.clear();
 				clearScrollInsets();
 				resizeObserver?.disconnect();
 				resizeObserver = null;
 				conversation = null;
 				surface = null;
+				questionResizeObserver?.disconnect();
+				questionResizeObserver = null;
 				if (clearWorkspaceTemplate) workspaceTemplate = null;
 				if (!seat) return;
 				workspaceProjection?.remove();
@@ -3313,6 +3439,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				removeHandle();
 				seat = null;
 				card = null;
+				questionPanel = null;
 			};
 			const resizeController = createResizeController({
 				isEnabled: enabled,
@@ -3450,6 +3577,25 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 					removeLegacyVoiceDensityMarker();
 					clearControls = placeNativeControlMarkers(card);
 				}
+				const previousQuestionPanel = questionPanel;
+				const nextQuestionPanel = seat?.querySelector("[data-question-key]") || null;
+				if (nextQuestionPanel !== questionPanel) {
+					questionResizeObserver?.disconnect();
+					questionResizeObserver = null;
+					questionPanel = nextQuestionPanel;
+					if (questionPanel) seat.setAttribute("data-dsh-fairy-composer-question", "true");
+					else seat.removeAttribute("data-dsh-fairy-composer-question");
+					if (questionPanel && typeof ResizeObserver === "function") {
+						questionResizeObserver = new ResizeObserver(schedule);
+						questionResizeObserver.observe(questionPanel);
+					}
+					if (previousQuestionPanel && !questionPanel) pendingQuestionExit = true;
+				}
+				const lifecycle = snapshot().lifecycle;
+				if (pendingQuestionExit && lifecycle === "running") {
+					pendingQuestionExit = false;
+					resumeTailFollow();
+				} else if (pendingQuestionExit && lifecycle === "completed") pendingQuestionExit = false;
 				removeLegacyMascotScaleControl();
 				ensureMascotScaleBase();
 				ensureMascotAnimationSpeedBase();
@@ -3479,6 +3625,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				syncMaterialLayer();
 				insetSynchronizer.flush();
 				contentAnchor.flush();
+				tailFollower.flush();
+				if (resumeTail && lifecycle === "completed") clearResumeTail();
 				toBottomPositioner.flush();
 				updateHandle();
 			}
@@ -3508,6 +3656,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				ensureWorkspaceProjection(seat?.querySelector("[data-dsh-fairy-composer-stack=\"true\"]"), workspaceRow);
 				syncReasoningMenuLayer();
 				contentAnchor.schedule();
+				tailFollower.schedule();
 				toBottomPositioner.schedule();
 				schedule();
 			}
@@ -3563,6 +3712,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				off?.();
 				window.removeEventListener("resize", schedule);
 				window.visualViewport?.removeEventListener("resize", schedule);
+				tailFollower.clear();
 				toBottomPositioner.clear();
 				restoreSeat({ clearWorkspaceTemplate: true });
 			};
@@ -5568,8 +5718,36 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 		const { MODE_ATTR, HERO_PLACEHOLDERS } = (init_constants(), __toCommonJS(constants_exports));
 		const { createManagedMutationObserver } = require_dom_observer_manager();
 		const { mutationTouchesSurface, mutationTouchesHeroSurface } = require_surface_utils();
-		const { OFFICIAL_SELECTORS, OFFICIAL_ATTRIBUTES, sidebar, conversation, phase, composerSeat, composerCard, composerTextarea } = require_dom_adapter();
+		const { OFFICIAL_SELECTORS, OFFICIAL_ATTRIBUTES, sidebar, conversation, phase, composerSeat, composerCard, composerTextarea, composerPlaceholder, rightSidebarToggle } = require_dom_adapter();
 		let heroMaskInstanceSeed = 0;
+		function placeholderSnapshot(node) {
+			return {
+				placeholder: node?.getAttribute("placeholder") ?? null,
+				dataPlaceholder: node?.getAttribute("data-placeholder") ?? null,
+				ariaLabel: node?.getAttribute("aria-label") ?? null
+			};
+		}
+		function currentPlaceholder(node) {
+			return node?.getAttribute("placeholder") ?? node?.getAttribute("data-placeholder") ?? null;
+		}
+		function applyPlaceholder(node, text) {
+			if (!node) return;
+			if (node.tagName === "TEXTAREA") {
+				node.setAttribute("placeholder", text);
+				return;
+			}
+			node.setAttribute("data-placeholder", text);
+			node.setAttribute("aria-label", text);
+		}
+		function restorePlaceholder(node, snapshot) {
+			if (!node || !snapshot) return;
+			for (const [name, value] of [
+				["placeholder", snapshot.placeholder],
+				["data-placeholder", snapshot.dataPlaceholder],
+				["aria-label", snapshot.ariaLabel]
+			]) if (value === null) node.removeAttribute(name);
+			else node.setAttribute(name, value);
+		}
 		function install(_lifecycle = null, { Toggle, useController }) {
 			function HeroToggleHost({ controller }) {
 				const hostRef = React$1.useRef(null);
@@ -5608,7 +5786,10 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 							setPositioned(false);
 							return;
 						}
-						host.style.left = Math.round(rect.right - host.offsetWidth - 28) + "px";
+						const rightControlRect = rightSidebarToggle(document)?.getBoundingClientRect?.();
+						let left = rect.right - host.offsetWidth - 28;
+						if (rightControlRect && rightControlRect.width > 0 && rightControlRect.left < rect.right - 28 && rightControlRect.bottom > rect.top + 4 && rightControlRect.top < rect.top + 44) left = Math.min(left, rightControlRect.left - host.offsetWidth - 8);
+						host.style.left = Math.round(Math.max(rect.left + 8, left)) + "px";
 						host.style.top = Math.round(rect.top + 8) + "px";
 						setPositioned(true);
 					};
@@ -5642,7 +5823,11 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 							childList: true,
 							subtree: true,
 							attributes: true,
-							attributeFilter: [OFFICIAL_ATTRIBUTES.phase, "placeholder"]
+							attributeFilter: [
+								OFFICIAL_ATTRIBUTES.phase,
+								"placeholder",
+								"data-placeholder"
+							]
 						});
 					}
 					window.addEventListener("resize", schedule, { passive: true });
@@ -5687,6 +5872,8 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 					let textarea = null;
 					let originalPlaceholder = null;
 					let appliedPlaceholder = null;
+					let placeholderNode = null;
+					let originalPlaceholderText = null;
 					let resizeObserver = null;
 					let structureObserver = null;
 					let modeObserver = null;
@@ -5698,10 +5885,9 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 					let observedSidebarFrame = null;
 					const restoreTextarea = () => {
 						if (!textarea) return;
-						const current = textarea.getAttribute("placeholder");
-						if (appliedPlaceholder !== null && current !== appliedPlaceholder) originalPlaceholder = current;
-						if (originalPlaceholder === null) textarea.removeAttribute("placeholder");
-						else textarea.setAttribute("placeholder", originalPlaceholder);
+						const current = currentPlaceholder(textarea);
+						if (appliedPlaceholder !== null && current !== appliedPlaceholder) originalPlaceholder = placeholderSnapshot(textarea);
+						restorePlaceholder(textarea, originalPlaceholder);
 						textarea = null;
 						originalPlaceholder = null;
 						appliedPlaceholder = null;
@@ -5710,6 +5896,9 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 						nativeHeadline?.classList.remove("dsh-fairy-hero-native-headline", "dsh-fairy-hero-native-headline-hidden");
 						nativeHeadline = null;
 						restoreTextarea();
+						if (placeholderNode?.isConnected) placeholderNode.textContent = originalPlaceholderText;
+						placeholderNode = null;
+						originalPlaceholderText = null;
 						host.setAttribute("data-active", "false");
 						if (resetHostGeometry) {
 							host.style.removeProperty("left");
@@ -5751,11 +5940,24 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 							if (textarea !== nextTextarea) {
 								restoreTextarea();
 								textarea = nextTextarea;
-								originalPlaceholder = textarea.getAttribute("placeholder");
+								originalPlaceholder = placeholderSnapshot(textarea);
 							}
-							if (textarea.getAttribute("placeholder") !== replacementPlaceholder) textarea.setAttribute("placeholder", replacementPlaceholder);
+							if (currentPlaceholder(textarea) !== replacementPlaceholder) applyPlaceholder(textarea, replacementPlaceholder);
 							appliedPlaceholder = replacementPlaceholder;
 						} else restoreTextarea();
+						const nextPlaceholderNode = composerPlaceholder(hero);
+						if (hddEnabled && nextPlaceholderNode) {
+							if (placeholderNode !== nextPlaceholderNode) {
+								if (placeholderNode?.isConnected) placeholderNode.textContent = originalPlaceholderText;
+								placeholderNode = nextPlaceholderNode;
+								originalPlaceholderText = nextPlaceholderNode.textContent;
+							}
+							if (nextPlaceholderNode.textContent !== replacementPlaceholder) nextPlaceholderNode.textContent = replacementPlaceholder;
+						} else if (placeholderNode) {
+							if (placeholderNode.isConnected) placeholderNode.textContent = originalPlaceholderText;
+							placeholderNode = null;
+							originalPlaceholderText = null;
+						}
 						const heroRect = hero.getBoundingClientRect();
 						const center = heroRect.left + heroRect.width * .5;
 						host.style.left = Math.round(center) + "px";
@@ -5811,13 +6013,24 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 					if (typeof MutationObserver === "function") sidebarLayoutObserver = createManagedMutationObserver(scheduleHeroSync);
 					if (typeof MutationObserver === "function" && document.body) {
 						structureObserver = createManagedMutationObserver((records) => {
-							if (mutationTouchesSurface(records, `${OFFICIAL_SELECTORS.conversation}, ${OFFICIAL_SELECTORS.phaseHero}, ${OFFICIAL_SELECTORS.composerSeat}`, [OFFICIAL_ATTRIBUTES.phase, "placeholder"])) scheduleHeroSync();
+							if (mutationTouchesSurface(records, `${OFFICIAL_SELECTORS.conversation}, ${OFFICIAL_SELECTORS.phaseHero}, ${OFFICIAL_SELECTORS.composerSeat}`, [
+								OFFICIAL_ATTRIBUTES.phase,
+								"placeholder",
+								"data-placeholder",
+								"data-composer-placeholder"
+							])) scheduleHeroSync();
 						});
 						structureObserver.observe(document.body, {
 							childList: true,
 							subtree: true,
+							characterData: true,
 							attributes: true,
-							attributeFilter: [OFFICIAL_ATTRIBUTES.phase, "placeholder"]
+							attributeFilter: [
+								OFFICIAL_ATTRIBUTES.phase,
+								"placeholder",
+								"data-placeholder",
+								"data-composer-placeholder"
+							]
 						});
 						modeObserver = createManagedMutationObserver(scheduleHeroSync);
 						modeObserver.observe(document.documentElement, {
@@ -6007,10 +6220,9 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 					};
 					const restoreTextarea = () => {
 						if (!textarea) return;
-						const current = textarea.getAttribute("placeholder");
-						if (appliedPlaceholder !== null && current !== appliedPlaceholder) originalPlaceholder = current;
-						if (originalPlaceholder === null) textarea.removeAttribute("placeholder");
-						else textarea.setAttribute("placeholder", originalPlaceholder);
+						const current = currentPlaceholder(textarea);
+						if (appliedPlaceholder !== null && current !== appliedPlaceholder) originalPlaceholder = placeholderSnapshot(textarea);
+						restorePlaceholder(textarea, originalPlaceholder);
 						textarea = null;
 						originalPlaceholder = null;
 						appliedPlaceholder = null;
@@ -6024,12 +6236,12 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 						if (textarea !== nextTextarea) {
 							restoreTextarea();
 							textarea = nextTextarea;
-							originalPlaceholder = textarea.getAttribute("placeholder");
+							originalPlaceholder = placeholderSnapshot(textarea);
 						}
 						const replacement = placeholderRef.current.text;
-						const current = textarea.getAttribute("placeholder");
-						if (appliedPlaceholder !== null && current !== appliedPlaceholder) originalPlaceholder = current;
-						if (current !== replacement) textarea.setAttribute("placeholder", replacement);
+						const current = currentPlaceholder(textarea);
+						if (appliedPlaceholder !== null && current !== appliedPlaceholder) originalPlaceholder = placeholderSnapshot(textarea);
+						if (current !== replacement) applyPlaceholder(textarea, replacement);
 						appliedPlaceholder = replacement;
 					};
 					const schedulePlaceholderSync = () => {
@@ -6040,17 +6252,21 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 							if (mutationTouchesSurface(records, `${OFFICIAL_SELECTORS.conversation}, ${OFFICIAL_SELECTORS.phaseActive}, ${OFFICIAL_SELECTORS.composerSeat}`, [
 								OFFICIAL_ATTRIBUTES.phase,
 								OFFICIAL_ATTRIBUTES.composerSeat,
-								"placeholder"
+								"placeholder",
+								"data-placeholder"
 							])) schedulePlaceholderSync();
 						});
 						structureObserver.observe(document.body, {
 							childList: true,
 							subtree: true,
+							characterData: true,
 							attributes: true,
 							attributeFilter: [
 								OFFICIAL_ATTRIBUTES.phase,
 								OFFICIAL_ATTRIBUTES.composerSeat,
-								"placeholder"
+								"placeholder",
+								"data-placeholder",
+								"data-composer-placeholder"
 							]
 						});
 						modeObserver = createManagedMutationObserver(schedulePlaceholderSync);
@@ -6237,6 +6453,131 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 	}));
 
 //#endregion
+//#region src/client/settings-bridge.js
+	var settings_bridge_exports = /* @__PURE__ */ __exportAll({
+		createSettingsProjection: () => createSettingsProjection,
+		createSettingsScope: () => createSettingsScope
+	});
+	/**
+	* DSH 0.2.x stores plugin preferences in the profile entry's volatile Config.
+	* The client reads them through `remote.settings`; there is no settingsScope
+	* service in this runtime.
+	*/
+	function createSettingsScope(ctx, { namespace, defaults, path = [] }) {
+		let currentView = null;
+		let disposed = false;
+		let snapshot = {
+			status: "loading",
+			value: defaults,
+			revision: void 0,
+			writable: false,
+			error: null
+		};
+		const listeners = /* @__PURE__ */ new Set();
+		const emit = () => {
+			if (!disposed) for (const listener of [...listeners]) listener();
+		};
+		const project = (row) => {
+			let value = row?.value;
+			for (const key of path) value = value && typeof value === "object" ? value[key] : void 0;
+			return {
+				status: row === void 0 ? "unavailable" : "ready",
+				value: value && typeof value === "object" ? value : defaults,
+				revision: row?.revision,
+				writable: Boolean(currentView?.writable),
+				error: null
+			};
+		};
+		const applyView = (view) => {
+			if (!view) return;
+			if (Array.isArray(view.namespaces)) currentView = view;
+			else if (view.ns) {
+				const namespaces = currentView?.namespaces || [];
+				currentView = {
+					writable: currentView?.writable ?? true,
+					namespaces: namespaces.some((row) => row.ns === view.ns) ? namespaces.map((row) => row.ns === view.ns ? view : row) : [...namespaces, view]
+				};
+			}
+			snapshot = project((currentView?.namespaces || []).find((row) => row.ns === namespace));
+			emit();
+		};
+		const load = async () => {
+			try {
+				const response = await ctx.remote.settings.describe();
+				if (disposed) return;
+				if (!response?.ok) {
+					snapshot = {
+						...snapshot,
+						status: "error",
+						error: response?.error?.message || "settings unavailable"
+					};
+					emit();
+					return;
+				}
+				applyView(response.value);
+			} catch (error) {
+				if (disposed) return;
+				snapshot = {
+					...snapshot,
+					status: "error",
+					error: String(error?.message || error)
+				};
+				emit();
+			}
+		};
+		const offDocument = ctx.remote.$on?.("settings/document-updated", (updated) => {
+			if (updated === namespace) load();
+		});
+		const offReset = ctx.on?.("connection/reset", () => void load());
+		load();
+		return {
+			getSnapshot: () => snapshot,
+			subscribe: (listener) => {
+				listeners.add(listener);
+				return () => listeners.delete(listener);
+			},
+			async setPath(targetPath, value) {
+				const response = await ctx.remote.settings.mutate(namespace, [{
+					op: "set",
+					path: targetPath,
+					value
+				}], snapshot.revision);
+				if (!response?.ok) throw new Error(response?.error?.message || "settings write failed");
+				applyView(response.value);
+			},
+			set(field, value) {
+				return this.setPath([...path, field], value);
+			},
+			dispose() {
+				disposed = true;
+				offDocument?.();
+				offReset?.();
+				listeners.clear();
+			}
+		};
+	}
+	/** Derive a nested settings view from the namespace's single revisioned scope. */
+	function createSettingsProjection(root, { path, defaults }) {
+		return {
+			getSnapshot() {
+				const snapshot = root.getSnapshot();
+				let value = snapshot.value;
+				for (const key of path) value = value && typeof value === "object" ? value[key] : void 0;
+				return {
+					...snapshot,
+					value: value && typeof value === "object" ? value : defaults
+				};
+			},
+			subscribe: root.subscribe,
+			set(field, value) {
+				return root.setPath([...path, field], value);
+			},
+			dispose() {}
+		};
+	}
+	var init_settings_bridge = __esmMin((() => {}));
+
+//#endregion
 //#region src/client/settings-normalizer.cjs
 	var require_settings_normalizer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		const SETTINGS_VERSION = 2;
@@ -6261,7 +6602,7 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 			const numericComposerHeight = toFiniteNumber(source.composerDockHeight);
 			return {
 				version: SETTINGS_VERSION,
-				enabled: typeof source.enabled === "boolean" ? source.enabled : false,
+				enabled: typeof source.enabled === "boolean" ? source.enabled : true,
 				theme: source.theme === "light" ? "light" : "dark",
 				mascotVisible: typeof source.mascotVisible === "boolean" ? source.mascotVisible : true,
 				mascotScale: Number.isFinite(numericScale) ? clamp(numericScale, .55, 1) : 1,
@@ -6825,7 +7166,6 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 		const { jsx, jsxs } = require("react/jsx-runtime");
 		const { createFairyDiagnostics } = require_client_diagnostics();
 		const { SETTINGS_NAMESPACE, STYLE_ID, MODE_ATTR, POWER_MODE_ATTR, THEME_ATTR, POWER_TOGGLE_WIDTH, POWER_TOGGLE_HEIGHT, DEFAULT } = (init_constants(), __toCommonJS(constants_exports));
-		const IDENTITY_SETTINGS_NAMESPACE = "fairy-identity";
 		const { deriveSessionActivity, syncDocumentMode } = (init_utils(), __toCommonJS(utils_exports));
 		const { injectStyles } = (init_style(), __toCommonJS(style_exports));
 		const { mountComposerDock } = require_composer_dock();
@@ -6845,6 +7185,7 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 		const { createSelectionGuard } = require_selection_guard();
 		const { scheduleMascotScale, MASCOT_GEOMETRY_EVENT } = require_mascot_scale_control();
 		const { saveControllerSetting } = require_settings_write();
+		const { createSettingsScope, createSettingsProjection } = (/* @__PURE__ */ init_settings_bridge(), __toCommonJS(settings_bridge_exports));
 		const { mutationTouchesSurface } = require_surface_utils();
 		const { migrateVisualSettings, normalizeSetting } = require_settings_normalizer();
 		const { createVisualTransitions } = require_visual_transitions();
@@ -6910,7 +7251,8 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 				this.listeners.forEach((listener) => listener());
 			}
 			bind() {
-				const id = this.sessions.list.getSnapshot().current;
+				const list = this.sessions.list.getSnapshot();
+				const id = list.current ?? Object.values(list.byId || {}).find((row) => (row?.retainedBy?.mainView ?? 0) > 0)?.id;
 				const next = id == null ? null : this.sessions.binding(id)?.session || null;
 				if (this.hasBoundSession && id !== this.boundSessionId && this.state.settings.enabled) this.sessionTransition.trigger();
 				this.boundSessionId = id;
@@ -7780,8 +8122,23 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 		}
 		function apply(ctx) {
 			return diagnostics.guard("apply", () => {
-				const settings = ctx.settingsScope.bind({ namespace: SETTINGS_NAMESPACE });
-				const identitySettings = ctx.settingsScope.bind({ namespace: IDENTITY_SETTINGS_NAMESPACE });
+				const settings = createSettingsScope(ctx, {
+					namespace: SETTINGS_NAMESPACE,
+					defaults: DEFAULT
+				});
+				const identitySettings = createSettingsProjection(settings, {
+					path: ["identity"],
+					defaults: {
+						mode: "ling",
+						customName: "",
+						secondAssistant: "",
+						household: []
+					}
+				});
+				ctx.effect(() => () => {
+					settings.dispose();
+					identitySettings.dispose();
+				}, "dsh-fairy-visual settings scopes");
 				syncDocumentMode(settings.getSnapshot());
 				injectStyles();
 				const selectionGuard = createSelectionGuard({ selector: [
@@ -7824,7 +8181,8 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 			inject: [
 				"slots",
 				"sessions",
-				"settingsScope"
+				"remote",
+				"remote.settings"
 			],
 			name: "dsh-fairy-visual"
 		};

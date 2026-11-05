@@ -6,7 +6,17 @@ on:
 
 jobs:
   packages:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        package:
+          - fairy-visual/dsh-fairy-visual
+          - fairy-voice/dsh-fairy-voice
+          - fairy-startup/dsh-fairy-startup
+          - browser-dock/dsh-browser-dock
+          - balance-meter/dsh-balance-meter
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -16,16 +26,10 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: |
-            profiles/web/pnpm-lock.yaml
-            fairy-visual/dsh-fairy-visual/pnpm-lock.yaml
-            fairy-voice/dsh-fairy-voice/pnpm-lock.yaml
-            fairy-startup/dsh-fairy-startup/pnpm-lock.yaml
-            browser-dock/dsh-browser-dock/pnpm-lock.yaml
-            balance-meter/dsh-balance-meter/pnpm-lock.yaml
-      - name: Install and test visual
-        working-directory: fairy-visual/dsh-fairy-visual
-        run: pnpm install --frozen-lockfile --ignore-scripts && pnpm test
-      - name: Install and test voice
-        working-directory: fairy-voice/dsh-fairy-voice
-        run: pnpm install --frozen-lockfile --ignore-scripts && pnpm test
+          cache-dependency-path: '**/pnpm-lock.yaml'
+      - name: Install
+        working-directory: ${{ matrix.package }}
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Test
+        working-directory: ${{ matrix.package }}
+        run: npm test

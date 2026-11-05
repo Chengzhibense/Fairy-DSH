@@ -14,13 +14,39 @@ process.on('uncaughtExceptionMonitor', (error, origin) => {
 });
 
 const dshHome = process.env.DSH_HOME || path.join(os.homedir(), '.dsh');
+const profileRoot = process.env.DSH_FAIRY_PROFILE_ROOT || path.join(dshHome, 'profiles', 'web');
 const runtimeDir = path.join(dshHome, 'browser-dock');
 const stateFile = path.join(runtimeDir, 'state.json');
 const legacyFrameFile = path.join(runtimeDir, 'frame.jpg');
 const commandFile = path.join(runtimeDir, 'command.json');
 const commandFileName = path.basename(commandFile);
 const commandRescanMs = 5_000;
-const playwrightCommand = path.join(dshHome, 'profiles', 'web', 'node_modules', '.bin', 'playwright-mcp');
+function resolvePlaywrightLaunch() {
+  // DSH scrubs ambient DSH_* variables from MCP child processes, so the
+  // profile path is passed explicitly by the profile entry. Resolve the real
+  // CLI entry instead of a POSIX shim: Windows cannot spawn `.cmd` shims
+  // without a shell, and extensionless shims do not exist there at all.
+  const override = process.env.DSH_BROWSER_DOCK_PLAYWRIGHT;
+  if (override) return { command: process.execPath, args: [override] };
+  const packageRoot = path.join(profileRoot, 'node_modules', '@playwright', 'mcp');
+  try {
+    const manifest = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
+    const relative = typeof manifest.bin === 'string' ? manifest.bin : manifest.bin?.['playwright-mcp'];
+    if (relative) {
+      const entry = path.resolve(packageRoot, relative);
+      if (fs.existsSync(entry)) return { command: process.execPath, args: [entry] };
+    }
+  } catch (error) {
+    if (error.code !== 'ENOENT') diagnostics.warn('proxy.playwright.manifest', {}, error);
+  }
+  return {
+    command: path.join(profileRoot, 'node_modules', '.bin', process.platform === 'win32' ? 'playwright-mcp.cmd' : 'playwright-mcp'),
+    args: [],
+    shell: process.platform === 'win32',
+  };
+}
+
+const playwrightLaunch = resolvePlaywrightLaunch();
 const profileFlagIndex = process.argv.indexOf('--user-data-dir');
 const userDataDir = profileFlagIndex >= 0 ? process.argv[profileFlagIndex + 1] : path.join(dshHome, 'playwright-profile');
 const captureActions = new Set([
@@ -113,7 +139,7 @@ function key(id) {
 }
 
 function sendToServer(message) {
-  if (!child.stdin.destroyed && child.stdin.writable) {
+  if (child.stdin && !child.stdin.destroyed && child.stdin.writable) {
     try { child.stdin.write(`${JSON.stringify(message)}\n`); }
     catch (error) { diagnostics.warn('proxy.child.write', {}, error); }
   }
@@ -268,9 +294,28 @@ async function externalTakeover(command) {
   const url = state.url || 'about:blank';
   publish({ loading: true, status: 'handoff', takeoverConsumed: true });
   await closeBrowser('handoff');
-  const browser = spawn('/usr/bin/open', [
-    '-na', 'Google Chrome', '--args', `--user-data-dir=${userDataDir}`, '--new-window', url,
-  ], { detached: true, stdio: 'ignore' });
+  const options = { detached: true, stdio: 'ignore' };
+  const browserArgs = [`--user-data-dir=${userDataDir}`, '--new-window', url];
+  const candidates = process.platform === 'darwin'
+    ? ['/usr/bin/open']
+    : process.platform === 'win32'
+      ? [
+        path.join(process.env.LOCALAPPDATA || '', 'Google', 'Chrome', 'Application', 'chrome.exe'),
+        path.join(process.env.PROGRAMFILES || '', 'Google', 'Chrome', 'Application', 'chrome.exe'),
+        path.join(process.env['PROGRAMFILES(X86)'] || '', 'Google', 'Chrome', 'Application', 'chrome.exe'),
+        path.join(process.env.PROGRAMFILES || '', 'Microsoft', 'Edge', 'Application', 'msedge.exe'),
+        path.join(process.env['PROGRAMFILES(X86)'] || '', 'Microsoft', 'Edge', 'Application', 'msedge.exe'),
+      ]
+      : ['google-chrome', 'chromium', 'chromium-browser'];
+  const executable = candidates.find((candidate) => process.platform !== 'win32' || fs.existsSync(candidate));
+  if (!executable) {
+    diagnostics.warn('proxy.takeover.unavailable', { platform: process.platform });
+    return;
+  }
+  const browser = process.platform === 'darwin'
+    ? spawn(executable, ['-na', 'Google Chrome', '--args', ...browserArgs], options)
+    : spawn(executable, browserArgs, options);
+  browser.on('error', (error) => diagnostics.warn('proxy.takeover.spawn', { platform: process.platform }, error));
   browser.unref();
 }
 
@@ -306,8 +351,17 @@ function pollCommands() {
 removeRuntimeFiles();
 publish(inactiveState());
 
-const child = spawn(playwrightCommand, process.argv.slice(2), { stdio: ['pipe', 'pipe', 'pipe'] });
+const child = spawn(playwrightLaunch.command, [...playwrightLaunch.args, ...process.argv.slice(2)], {
+  stdio: ['pipe', 'pipe', 'pipe'],
+  ...(playwrightLaunch.shell ? { shell: true } : {}),
+});
 child.stderr.pipe(process.stderr);
+child.on('error', (error) => {
+  diagnostics.error('proxy.child.spawn', error, { command: path.basename(playwrightLaunch.command) });
+  publish(inactiveState({ status: 'error', error: `Playwright launch failed: ${error.message}` }));
+  process.exitCode = 1;
+  setTimeout(() => process.exit(1), 0);
+});
 
 const clientInput = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
 clientInput.on('line', (line) => {
@@ -390,7 +444,7 @@ function shutdown(signal) {
   internalCalls.clear();
   clientCalls.clear();
   removeRuntimeFiles();
-  if (!child.killed) child.kill(signal);
+  if (!child.killed && child.exitCode === null) child.kill(signal);
   setTimeout(() => process.exit(0), 250);
 }
 

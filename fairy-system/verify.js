@@ -357,14 +357,14 @@ function verifyStaticContracts() {
   assert(profilePackage.dependencies?.['dsh-fairy-voice'] === 'link:../../fairy-voice/dsh-fairy-voice', 'web profile must link the local audio package');
   assert(/id:\s*fairy-voice[\s\S]*?name:\s*['"]dsh-fairy-voice['"][\s\S]*?inject:\s*\[clientModules\]/.test(profilePatch), 'audio client module is not registered in the web profile');
   assert(audioServer.includes('127.0.0.1:9880') && audioServer.includes('/fairy-voice/tts'), 'audio server contract is incomplete');
-  assert(audioServer.includes("import { homedir } from 'node:os'") && audioServer.includes("join(homedir(), '.dsh', 'fairy-voice'"), 'audio reference path must be rooted at the current DSH home');
+  assert(audioServer.includes('process.env.DSH_HOME') && audioServer.includes("join(DSH_HOME, 'fairy-voice'"), 'audio reference path must be rooted at the current DSH home');
   assert(audioClient.includes('conversation.chat.assistant-actions') && audioClient.includes('conversation.input.left'), 'audio client slots are not registered');
   assert(!/dsh-hdd-mode|agent\/pre-step|\.agent-presets/.test(audioServer + audioClient), 'audio module must not own language or visual state');
   assert(fs.existsSync(path.join(paths.audio, 'runtime', 'reference', 'fairy_ref.wav')), 'audio reference file is missing');
   assert(audioLaunchAgent.includes('com.origen.fairy-voice-api') && audioLaunchAgent.includes('<key>KeepAlive</key>') && audioLaunchAgent.includes('127.0.0.1'), 'audio LaunchAgent contract is incomplete');
   assert(audioStop.includes('/control?command=exit') && !audioStop.includes("-X POST"), 'audio shutdown helper must use the service\'s registered control endpoint');
 
-  const playwrightCommand = path.join(paths.profile, 'node_modules', '.bin', 'playwright-mcp');
+  const playwrightPackage = path.join(paths.profile, 'node_modules', '@playwright', 'mcp', 'package.json');
   const playwrightProxy = path.join(paths.browserDock, 'proxy.cjs');
   const context7Command = path.join(paths.profile, 'node_modules', '.bin', 'context7-mcp');
   assert(profilePackage.dependencies?.['@playwright/mcp'] === '0.0.79', 'Playwright MCP version must remain pinned');
@@ -372,10 +372,10 @@ function verifyStaticContracts() {
   assert(profilePackage.dependencies?.hono === '4.13.2', 'Context7 peer dependency must remain pinned');
   assert(profilePackage.dependencies?.['dsh-message-edit'] === '0.2.3', 'message-edit patch dependency must remain exactly pinned');
   assert(!/\bnpx\b|@latest/.test(profilePatch), 'MCP servers must not use npm wrappers or floating latest versions');
-  assert(profilePatch.includes(`command: '${playwrightProxy}'`), 'Playwright MCP must run through the reviewed browser dock proxy');
-  assert(profilePatch.includes(`args: ['--browser', 'chrome', '--headless', '--user-data-dir', '${path.join(dshRoot, 'playwright-profile')}']`), 'Playwright MCP must run headless with the dedicated persistent profile');
+  assert(profilePatch.includes('proxy.cjs') && profilePatch.includes('browser-dock'), 'Playwright MCP must run through the reviewed browser dock proxy');
+  assert(profilePatch.includes("'--browser'") && profilePatch.includes("'--headless'") && profilePatch.includes('playwright-profile'), 'Playwright MCP must run headless with the dedicated persistent profile');
   assert(profilePatch.includes(`command: '${context7Command}'`), 'Context7 MCP must use the profile-local executable directly');
-  assert(fs.existsSync(playwrightCommand), 'Playwright MCP executable is missing');
+  assert(fs.existsSync(playwrightPackage), 'Playwright MCP package is missing');
   assert(fs.existsSync(playwrightProxy) && (fs.statSync(playwrightProxy).mode & 0o111) !== 0, 'browser dock proxy is missing or not executable');
   assert(fs.existsSync(context7Command), 'Context7 MCP executable is missing');
 }

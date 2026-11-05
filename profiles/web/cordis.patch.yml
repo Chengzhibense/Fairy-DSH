@@ -20,8 +20,21 @@
       config:
         serverName: playwright
         transport: stdio
-        command: !!js process.env.DSH_FAIRY_REPO_ROOT + '/browser-dock/dsh-browser-dock/proxy.cjs'
-        args: ['--browser', 'chrome', '--headless', '--user-data-dir', !!js process.env.DSH_FAIRY_TEST_HOME + '/playwright-profile']
+        command: !!js process.env.DSH_FAIRY_REPO_ROOT +
+          '/browser-dock/dsh-browser-dock/proxy.cjs'
+        args:
+          - '--browser'
+          - !!js "process.env.DSH_FAIRY_BROWSER || (process.platform === 'win32' ? 'msedge'
+            : 'chrome')"
+          - '--headless'
+          - '--user-data-dir'
+          - !!js process.env.DSH_FAIRY_TEST_HOME + '/playwright-profile'
+        env:
+          DSH_HOME: !!js process.env.DSH_HOME || ((process.env.USERPROFILE ||
+            process.env.HOME) + '/.dsh')
+          DSH_FAIRY_PROFILE_ROOT: !!js process.env.DSH_FAIRY_PROFILE_ROOT ||
+            (((process.env.DSH_HOME || ((process.env.USERPROFILE ||
+            process.env.HOME) + '/.dsh'))) + '/profiles/web')
 
     - id: mcp-context7
       name: '@deepseek-ai/dsh-mcp-client'
@@ -33,20 +46,20 @@
 
     - id: balance-meter
       name: 'dsh-balance-meter'
-      inject: [clientModules]
+      inject: [ clientModules ]
 
     - id: browser-dock
       name: 'dsh-browser-dock'
-      inject: [clientModules]
+      inject: [ clientModules ]
 
     - id: fairy-startup
       name: 'dsh-fairy-startup'
-      inject: [clientModules]
+      inject: [ clientModules ]
 
     - id: fairy-voice
       name: 'dsh-fairy-voice'
-      inject: [clientModules]
+      inject: [ clientModules ]
 
     - id: fairy-visual
       name: 'dsh-fairy-visual'
-      inject: [clientModules]
+      inject: [ clientModules ]

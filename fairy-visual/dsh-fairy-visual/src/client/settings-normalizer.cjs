@@ -19,7 +19,7 @@ function migrateVisualSettings(input = {}) {
   const numericComposerHeight = toFiniteNumber(source.composerDockHeight);
   return {
     version: SETTINGS_VERSION,
-    enabled: typeof source.enabled === 'boolean' ? source.enabled : false,
+    enabled: typeof source.enabled === 'boolean' ? source.enabled : true,
     theme: source.theme === 'light' ? 'light' : 'dark',
     mascotVisible: typeof source.mascotVisible === 'boolean' ? source.mascotVisible : true,
     mascotScale: Number.isFinite(numericScale) ? clamp(numericScale, 0.55, 1) : 1,

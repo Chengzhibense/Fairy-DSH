@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { chmod, mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -26,10 +26,9 @@ async function waitFor(check, message, timeoutMs = 4000) {
 
 test('publishes the dock only after the first presentable frame is complete', async (t) => {
   const dshHome = await mkdtemp(join(tmpdir(), 'dsh-browser-dock-startup-'));
-  const playwright = join(dshHome, 'profiles', 'web', 'node_modules', '.bin', 'playwright-mcp');
+  const playwright = join(dshHome, 'fake-playwright.cjs');
   const stateFile = join(dshHome, 'browser-dock', 'state.json');
-  await mkdir(dirname(playwright), { recursive: true });
-  await writeFile(playwright, `#!/usr/bin/env node
+  await writeFile(playwright, `
 const readline = require('node:readline');
 let navigated = false;
 const blankUrl = 'about:blank';
@@ -57,16 +56,17 @@ readline.createInterface({ input: process.stdin, crlfDelay: Infinity }).on('line
     send(message.id, [{ type: 'text', text: 'closed' }]);
   }
 });
-`, { mode: 0o700 });
-  await chmod(playwright, 0o700);
+`);
 
   const child = spawn(process.execPath, [proxyPath], {
-    env: { ...process.env, DSH_HOME: dshHome },
+    env: { ...process.env, DSH_HOME: dshHome, DSH_BROWSER_DOCK_PLAYWRIGHT: playwright },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   t.after(async () => {
-    if (child.exitCode == null) child.kill('SIGTERM');
-    await new Promise((resolve) => child.once('exit', resolve));
+    if (child.exitCode == null) {
+      child.kill('SIGTERM');
+      await new Promise((resolve) => child.once('exit', resolve));
+    }
     await rm(dshHome, { recursive: true, force: true });
   });
 
@@ -106,4 +106,32 @@ readline.createInterface({ input: process.stdin, crlfDelay: Infinity }).on('line
     return value?.status === 'event-driven-test' ? value : null;
   }, 'filesystem event did not deliver the control command before the 5s fallback');
   assert.equal(closed.active, false);
+});
+
+test('launches the Playwright package entry through node on every platform', async (t) => {
+  const dshHome = await mkdtemp(join(tmpdir(), 'dsh-browser-dock-package-'));
+  const packageDir = join(dshHome, 'profiles', 'web', 'node_modules', '@playwright', 'mcp');
+  await mkdir(packageDir, { recursive: true });
+  await writeFile(join(packageDir, 'package.json'), JSON.stringify({
+    name: '@playwright/mcp',
+    bin: { 'playwright-mcp': 'cli.js' },
+  }));
+  await writeFile(join(packageDir, 'cli.js'), 'process.stdin.resume();\n');
+
+  const child = spawn(process.execPath, [proxyPath], {
+    env: { ...process.env, DSH_HOME: dshHome, DSH_BROWSER_DOCK_PLAYWRIGHT: '' },
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
+  t.after(async () => {
+    if (child.exitCode == null) {
+      child.kill('SIGTERM');
+      await new Promise((resolve) => child.once('exit', resolve));
+    }
+    await rm(dshHome, { recursive: true, force: true });
+  });
+
+  const stateFile = join(dshHome, 'browser-dock', 'state.json');
+  await waitFor(async () => (await readJson(stateFile))?.status === 'idle', 'proxy did not initialize from the package entry');
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  assert.equal(child.exitCode, null, 'proxy exited after resolving the Playwright package entry');
 });

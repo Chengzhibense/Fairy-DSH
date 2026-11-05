@@ -1,5 +1,10 @@
 # Fairy System：当前操作与验证
 
+> **0.2.x port note**：本次适配重新基线了 packages、profile 和浏览器 smoke；
+> `check.sh`、`accepted-baseline.js`、`upgrade-preflight.js` 仍绑定作者当前
+> 0.1.1 部署的私有 runtime/hash/验收快照。合并前需按目标 0.2.1 发行包重新
+> 验收这些 live-workspace 检查，不能把本目录的旧 baseline 当作 0.2.1 证据。
+
 本目录只负责当前 live workspace 的验证、升级预检和浏览器证据边界。工程规则在 `../AI_PROJECT_RULES.md`，架构在 `../ARCHITECTURE.md`，短运行摘要在 `../DSH-HANDOFF.md`。
 
 ## 当前批准边界
@@ -7,9 +12,9 @@
 | 项 | 值 |
 | --- | --- |
 | Canonical custom source | 当前仓库 checkout |
-| DSH | `0.1.1-rc.2` |
-| 官方 browser runtime SHA-256 | `13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679` |
-| Visual settings package | `@deepseek-ai/dsh-settings@0.1.1-rc.2` |
+| DSH | `0.2.1-alpha.5` |
+| 官方 browser runtime SHA-256 | 按目标 `0.2.1` 发行包重新记录 |
+| Visual settings schema | `@deepseek-ai/schemastery@3.18.5` |
 | Capability matrix | `capability-matrix.json` |
 | Browser acceptance matrix | `BROWSER-EVIDENCE-MATRIX.md` |
 
@@ -106,8 +111,8 @@ safari-hdd-transition-svg-integrity
 ./fairy-system/upgrade-candidate-preflight.sh \
   --profile /absolute/isolated/profile \
   --runtime /absolute/isolated/runtime/lib/client.js \
-  --expected-version 0.1.1-rc.2 \
-  --expected-sha256 13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679
+  --expected-version 0.2.1-alpha.5 \
+  --expected-sha256 <目标 runtime SHA-256>
 ```
 
 该预检只读：检查官方 runtime、ClientModuleRegistry、Browser ModuleLoader、package exports、profile inject order、DOM/slot/ARIA、settings、session/workspace 与依赖 pin；失败时输出兼容性报告，不会修改 active profile 或官方 runtime。

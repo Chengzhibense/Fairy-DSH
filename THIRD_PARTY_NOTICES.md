@@ -8,9 +8,12 @@ Fairy-DSH 的 Apache-2.0 原创代码许可范围内，发布时必须继续保�
 | --- | --- | --- | --- |
 | `@playwright/mcp` | `0.0.79` · [microsoft/playwright-mcp](https://github.com/microsoft/playwright-mcp) | Apache-2.0 | Microsoft；随包附带声明 |
 | `@upstash/context7-mcp` | `4.0.2` · [upstash/context7](https://github.com/upstash/context7) | MIT | Upstash；随包附带声明 |
-| `dsh-message-edit` | `0.2.3` · [Moeblack/dsh-message-edit](https://github.com/Moeblack/dsh-message-edit) | MIT | Moeblack；随包附带声明 |
-| `dsh-reasoning-effort` | `0.6.2` · commit `83bc8c548749d7156a03d11d875d8117e9b5d994` · [HanaAyane/dsh-reasoning-effort](https://github.com/HanaAyane/dsh-reasoning-effort) | MIT | HanaAyane；随包附带声明 |
+| `@deepseek-ai/schemastery` | `3.18.5` · [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) · `vendor/schemastery` | MIT | DeepSeek Harness contributors；随包附带声明 |
 | `hono` | `4.13.2` · [honojs/hono](https://github.com/honojs/hono) | MIT | Hono contributors；随包附带声明 |
+
+`dsh-message-edit` 和 `dsh-reasoning-effort` 仍以 MIT 发布，但它们当前的
+客户端 bundle 依赖 0.1 的 `@deepseek-ai/dsh-client-runtime/client` 模块表，
+在 DSH 0.2.x 上无法导入，因此本版本不再把它们作为默认 profile 依赖。
 
 ## 宿主提供的 DSH 包
 

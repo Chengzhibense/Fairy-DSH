@@ -1,0 +1,11 @@
+# Tests compare embedded source and test fixtures byte for byte, so every text
+# file must use the same line endings on Windows, macOS, and CI.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

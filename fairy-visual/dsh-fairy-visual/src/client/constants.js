@@ -8,7 +8,7 @@ export const POWER_TOGGLE_HEIGHT = 22;
 
 export const DEFAULT = {
   version: 2,
-  enabled: false,
+  enabled: true,
   theme: 'dark',
   mascotVisible: true,
   mascotScale: 1,

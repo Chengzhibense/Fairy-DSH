@@ -12,8 +12,9 @@ import { createFairyDiagnostics } from 'dsh-fairy-contracts/diagnostics';
 
 const LOCAL_TTS_URL = 'http://127.0.0.1:9880/tts';
 const LOCAL_DOCS_URL = 'http://127.0.0.1:9880/docs';
-const REFERENCE_AUDIO_PATH = join(homedir(), '.dsh', 'fairy-voice', 'runtime', 'reference', 'fairy_ref.wav');
-const REFERENCE_PROMPT_PATH = join(homedir(), '.dsh', 'fairy-voice', 'runtime', 'reference', 'fairy_ref.txt');
+const DSH_HOME = process.env.DSH_HOME || join(homedir(), '.dsh');
+const REFERENCE_AUDIO_PATH = join(DSH_HOME, 'fairy-voice', 'runtime', 'reference', 'fairy_ref.wav');
+const REFERENCE_PROMPT_PATH = join(DSH_HOME, 'fairy-voice', 'runtime', 'reference', 'fairy_ref.txt');
 const REFERENCE_PROMPT_FALLBACK = '根据用户协议，我无权回复该问题。主人将在合适的时间与合适的场合获知答案。';
 const diagnostics = createFairyDiagnostics('dsh-fairy-voice');
 
@@ -36,7 +37,7 @@ const MAX_VOICE_BRIEF_INPUT_LENGTH = 32_000;
 const MAX_VOICE_BRIEF_OUTPUT_LENGTH = 260;
 const DEEPSEEK_V4_FLASH_MODEL = 'deepseek-v4-flash';
 const DEEPSEEK_CHAT_COMPLETIONS_URL = 'https://api.deepseek.com/chat/completions';
-const VOICE_BRAIN_CONFIG_PATH = join(homedir(), '.dsh', 'fairy-voice', 'voice-brain.json');
+const VOICE_BRAIN_CONFIG_PATH = join(DSH_HOME, 'fairy-voice', 'voice-brain.json');
 function safeText(value) {
   return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
 }
@@ -72,9 +73,20 @@ export async function writePrivateJson(file, value) {
     await fileHandle.writeFile(`${JSON.stringify(value, null, 2)}\n`, 'utf8');
     await fileHandle.close();
     fileHandle = null;
-    await rename(temporaryPath, file);
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        await rename(temporaryPath, file);
+        break;
+      } catch (error) {
+        // Windows briefly locks a destination while another writer or a
+        // scanner touches it. The temp name is unique, so retrying preserves
+        // last-writer-wins atomicity without sharing a handle.
+        if (process.platform !== 'win32' || attempt >= 5 || !['EPERM', 'EACCES', 'EBUSY'].includes(error.code)) throw error;
+        await new Promise((resolve) => setTimeout(resolve, 10 * (attempt + 1)));
+      }
+    }
     committed = true;
-    await chmod(file, 0o600);
+    if (process.platform !== 'win32') await chmod(file, 0o600);
   } finally {
     if (fileHandle) {
       try {

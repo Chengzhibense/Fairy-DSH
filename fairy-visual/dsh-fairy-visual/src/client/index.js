@@ -2,7 +2,6 @@ const React = require('react');
 const { jsx, jsxs } = require('react/jsx-runtime');
 const { createFairyDiagnostics } = require('../../../../fairy-contracts/client-diagnostics.cjs');
 const { SETTINGS_NAMESPACE, STYLE_ID, MODE_ATTR, POWER_MODE_ATTR, THEME_ATTR, POWER_TOGGLE_WIDTH, POWER_TOGGLE_HEIGHT, DEFAULT } = require('./constants.js');
-const IDENTITY_SETTINGS_NAMESPACE = 'fairy-identity';
 const { deriveSessionActivity, syncDocumentMode } = require('./utils.js');
 const { injectStyles } = require('./style.js');
 const { mountComposerDock } = require('./composer-dock.js');
@@ -22,6 +21,7 @@ const { claimPowerModeGeometry } = require('./power-mode.js');
 const { createSelectionGuard } = require('./selection-guard.js');
 const { scheduleMascotScale, MASCOT_GEOMETRY_EVENT } = require('./mascot-scale-control.js');
 const { saveControllerSetting } = require('./settings-write.js');
+const { createSettingsScope, createSettingsProjection } = require('./settings-bridge.js');
 const { mutationTouchesSurface } = require('./surface-utils.js');
 const { migrateVisualSettings, normalizeSetting } = require('./settings-normalizer.cjs');
 const { createVisualTransitions } = require('./visual-transitions.js');
@@ -90,7 +90,9 @@ const diagnostics = createFairyDiagnostics('dsh-fairy-visual');
       }
 
       bind() {
-        const id = this.sessions.list.getSnapshot().current;
+        const list = this.sessions.list.getSnapshot();
+        const id = list.current ?? Object.values(list.byId || {})
+          .find((row) => (row?.retainedBy?.mainView ?? 0) > 0)?.id;
         const next = id == null ? null : this.sessions.binding(id)?.session || null;
         if (this.hasBoundSession && id !== this.boundSessionId && this.state.settings.enabled) this.sessionTransition.trigger();
         this.boundSessionId = id;
@@ -831,8 +833,15 @@ const diagnostics = createFairyDiagnostics('dsh-fairy-visual');
 
 function apply(ctx) {
       return diagnostics.guard('apply', () => {
-      const settings = ctx.settingsScope.bind({ namespace: SETTINGS_NAMESPACE });
-      const identitySettings = ctx.settingsScope.bind({ namespace: IDENTITY_SETTINGS_NAMESPACE });
+      const settings = createSettingsScope(ctx, { namespace: SETTINGS_NAMESPACE, defaults: DEFAULT });
+      const identitySettings = createSettingsProjection(settings, {
+        path: ['identity'],
+        defaults: { mode: 'ling', customName: '', secondAssistant: '', household: [] },
+      });
+      ctx.effect(() => () => {
+        settings.dispose();
+        identitySettings.dispose();
+      }, 'dsh-fairy-visual settings scopes');
       syncDocumentMode(settings.getSnapshot());
       injectStyles();
       const selectionGuard = createSelectionGuard({
@@ -857,4 +866,4 @@ function apply(ctx) {
       }, { surface: 'client' });
     }
 
-    module.exports = { apply, inject: ['slots', 'sessions', 'settingsScope'], name: 'dsh-fairy-visual' };
+    module.exports = { apply, inject: ['slots', 'sessions', 'remote', 'remote.settings'], name: 'dsh-fairy-visual' };

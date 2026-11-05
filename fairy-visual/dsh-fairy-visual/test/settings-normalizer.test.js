@@ -8,7 +8,7 @@ const { migrateVisualSettings, normalizeSetting } = require('../src/client/setti
 test('migrates a fresh or incomplete profile to the canonical v2 defaults', () => {
   assert.deepEqual(migrateVisualSettings({}), {
     version: 2,
-    enabled: false,
+    enabled: true,
     theme: 'dark',
     mascotVisible: true,
     mascotScale: 1,

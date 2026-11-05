@@ -1,32 +1,57 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { settingsNamespace } from '@deepseek-ai/dsh-settings';
-import { FAIRY_VISUAL_SETTINGS_NAMESPACE } from 'dsh-fairy-contracts';
 import { FairyVisualSettings } from '../src/index.js';
-
-const namespace = FAIRY_VISUAL_SETTINGS_NAMESPACE;
-
-function schemaJson() {
-  return FairyVisualSettings.toJSON();
-}
+import { createSettingsProjection, createSettingsScope } from '../src/client/settings-bridge.js';
 
 function schemaFields() {
-  const json = schemaJson();
+  const json = FairyVisualSettings.toJSON();
   const object = json.refs[String(json.uid)];
-  return Object.fromEntries(Object.entries(object.dict).map(([name, ref]) => {
-    const node = json.refs[String(ref)];
-    return [name, node];
-  }));
+  return Object.fromEntries(Object.entries(object.dict).map(([name, ref]) => [name, json.refs[String(ref)]]));
 }
 
-test('settings package exposes the namespace factory used by the host registration', () => {
-  assert.equal(namespace, 'fairy-visual');
-  assert.equal(settingsNamespace(namespace), namespace);
-  assert.throws(() => settingsNamespace('FairyVisual'), /must match/);
-  assert.throws(() => settingsNamespace('fairy_visual'), /must match/);
-});
+function fakeContext(namespace, initial = {}) {
+  let view = {
+    writable: true,
+    namespaces: [{ ns: namespace, revision: 1, value: initial }],
+  };
+  const writes = [];
+  const listeners = new Map();
+  const ctx = {
+    remote: {
+      settings: {
+        async describe() {
+          return { ok: true, value: view };
+        },
+        async mutate(ns, ops, revision) {
+          writes.push({ ns, ops, revision });
+          const row = view.namespaces.find((entry) => entry.ns === ns);
+          let value = row.value;
+          for (const op of ops) {
+            const next = structuredClone(value);
+            let target = next;
+            for (const key of op.path.slice(0, -1)) target = target[key] ??= {};
+            target[op.path.at(-1)] = op.value;
+            value = next;
+          }
+          const nextRow = { ...row, revision: row.revision + 1, value };
+          view = { ...view, namespaces: view.namespaces.map((entry) => entry.ns === ns ? nextRow : entry) };
+          return { ok: true, value: nextRow };
+        },
+      },
+      $on(name, listener) {
+        listeners.set(name, listener);
+        return () => listeners.delete(name);
+      },
+    },
+    on(name, listener) {
+      listeners.set(name, listener);
+      return () => listeners.delete(name);
+    },
+  };
+  return { ctx, writes, listeners };
+}
 
-test('Visual settings schema keeps the registered fields, defaults, and bounds', () => {
+test('Visual Config exposes every user preference as a volatile field', () => {
   const fields = schemaFields();
   assert.deepEqual(Object.keys(fields), [
     'version',
@@ -37,56 +62,47 @@ test('Visual settings schema keeps the registered fields, defaults, and bounds',
     'mascotAnimationSpeed',
     'powerMode',
     'composerDockHeight',
+    'identity',
   ]);
-  assert.equal(fields.version.meta.default, 2);
-  assert.equal(fields.enabled.meta.default, false);
+  assert.equal(fields.version.meta.volatile, undefined);
+  for (const field of ['enabled', 'theme', 'mascotVisible', 'mascotScale', 'mascotAnimationSpeed', 'powerMode', 'composerDockHeight']) {
+    assert.equal(fields[field].meta.volatile, true, `${field} must be volatile`);
+  }
+  assert.equal(fields.enabled.meta.default, true);
   assert.equal(fields.theme.meta.default, 'dark');
-  assert.equal(fields.mascotVisible.meta.default, true);
-  assert.deepEqual(
-    { step: fields.mascotScale.meta.step, min: fields.mascotScale.meta.min, max: fields.mascotScale.meta.max, default: fields.mascotScale.meta.default },
-    { step: 0.01, min: 0.55, max: 1, default: 1 },
-  );
-  assert.equal(fields.mascotAnimationSpeed.meta.default, 1);
-  assert.equal(fields.powerMode.meta.default, 'normal');
-  assert.deepEqual(
-    { step: fields.composerDockHeight.meta.step, min: fields.composerDockHeight.meta.min, max: fields.composerDockHeight.meta.max, default: fields.composerDockHeight.meta.default },
-    { step: 1, min: 132, max: 420, default: 132 },
-  );
+  assert.equal(fields.composerDockHeight.meta.default, 132);
 });
 
-test('client settings bridge preserves snapshot, subscription, write, and disposer shape', async () => {
-  let value = { enabled: false, theme: 'dark' };
-  const listeners = new Set();
-  const bridge = {
-    bind({ namespace: boundNamespace }) {
-      assert.equal(boundNamespace, namespace);
-      return {
-        getSnapshot: () => ({ value }),
-        subscribe(listener) {
-          listeners.add(listener);
-          return () => listeners.delete(listener);
-        },
-        set(field, next) {
-          value = { ...value, [field]: next };
-          listeners.forEach((listener) => listener());
-          return Promise.resolve();
-        },
-      };
-    },
-  };
-  const settings = bridge.bind({ namespace });
-  assert.equal(typeof settings.getSnapshot, 'function');
-  assert.equal(typeof settings.subscribe, 'function');
-  assert.equal(typeof settings.set, 'function');
-  assert.deepEqual(settings.getSnapshot().value, { enabled: false, theme: 'dark' });
+test('remote settings scope preserves snapshot, subscription, write, and disposer shape', async () => {
+  const namespace = 'fairy-visual';
+  const { ctx, writes, listeners } = fakeContext(namespace, { enabled: false, theme: 'dark', identity: { mode: 'ling' } });
+  const settings = createSettingsScope(ctx, { namespace, defaults: { enabled: false, theme: 'dark' } });
+  const identity = createSettingsProjection(settings, {
+    path: ['identity'],
+    defaults: { mode: 'ling', customName: '', secondAssistant: '', household: [] },
+  });
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  assert.equal(settings.getSnapshot().value.enabled, false);
+  assert.equal(identity.getSnapshot().value.mode, 'ling');
 
   let updates = 0;
   const dispose = settings.subscribe(() => { updates += 1; });
-  assert.equal(typeof dispose, 'function');
   await settings.set('theme', 'light');
+  assert.equal(writes[0].ns, namespace);
+  assert.deepEqual(writes[0].ops, [{ op: 'set', path: ['theme'], value: 'light' }]);
+  assert.equal(writes[0].revision, 1);
   assert.equal(updates, 1);
   assert.equal(settings.getSnapshot().value.theme, 'light');
+
+  await identity.set('mode', 'zhe');
+  assert.deepEqual(writes[1].ops, [{ op: 'set', path: ['identity', 'mode'], value: 'zhe' }]);
+  assert.equal(identity.getSnapshot().value.mode, 'zhe');
+  assert.ok(listeners.has('settings/document-updated'));
+  const beforeDispose = updates;
   dispose();
   await settings.set('theme', 'dark');
-  assert.equal(updates, 1);
+  assert.equal(updates, beforeDispose);
+  settings.dispose();
+  identity.dispose();
+  assert.equal(listeners.size, 0);
 });

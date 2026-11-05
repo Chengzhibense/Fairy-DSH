@@ -6,6 +6,21 @@ Fairy stage, activity expression, low-power presentation, and its own settings
 page. It does not read or change agent presets, language prompt state, TTS
 playback, or session selection.
 
+## 0.2.x settings contract
+
+This port targets DSH `0.2.1-alpha.5`. Preferences live in the `fairy-visual`
+profile entry's `Config`; every user-facing field is `.volatile()`, so the
+official Settings page and `remote.settings` can read and mutate it. The client
+uses `ctx.remote.settings.describe()` / `mutate()` through
+`src/client/settings-bridge.js`; `ctx.settingsScope` and
+`settingsNamespace` no longer exist in this runtime. Writes are persisted into
+the active profile's `cordis.patch.yml`, not `~/.dsh/settings.yaml`.
+
+The session identity comes from the session list's `retainedBy.mainView`
+retention (0.2.x no longer exposes `list.current`). Visual does not select,
+create, or clear sessions; `dsh-fairy-startup` owns that policy through
+`uiWorkspace`.
+
 ## Registration
 
 The web profile links this package through `profiles/web/package.json` and
@@ -27,20 +42,21 @@ It uses the documented client contracts:
 
 ## State
 
-The host settings namespace is `fairy-visual`:
+In 0.2.x the shape below is the `fairy-visual` profile entry's `Config`, not a
+separate host settings namespace:
 
 ```json
 {
   "version": 2,
-  "enabled": false,
+  "enabled": true,
   "theme": "dark",
   "mascotVisible": true,
   "powerMode": "normal"
 }
 ```
 
-`enabled` defaults to `false`, so registration alone cannot visually change an
-existing session. Fresh-document session selection belongs to the separate
+`enabled` defaults to `true`, so a fresh profile starts in HDD mode. Existing
+stored preferences still win. Fresh-document session selection belongs to the separate
 `dsh-fairy-startup` plugin; this package never starts, clears, or opens a
 session.
 
@@ -361,3 +377,19 @@ card has no margin, outer radius, four-sided border, or shadow, and one top
 border spans the full conversation width. The resizer occupies the same top
 boundary rather than creating a second floating frame. Internal display and
 control ownership are unchanged; normal mode is unaffected.
+
+## Pending question cards
+
+When DSH replaces the composer bar with an `ask_user_question` card, HDD sizes
+the fixed composer seat to the card's natural height instead of the persisted
+input-bar height. The complete card and its footer stay inside the viewport,
+long option lists retain their own scroll body, and the normal pointer events
+and keyboard controls remain usable. The input-bar resize handle is hidden
+while this card owns the seat and returns with the native composer.
+
+After the user answers a question, DSH can briefly drop its own follow-tail
+state while the card is removed and the dock shrinks back to the configured
+height. Visual bridges that transition until the answer settles so the newest
+streamed text remains at the scroll floor. Explicit wheel-up, touch, Page Up,
+Home, and Arrow Up input cancels the bridge, preserving the reader's chosen
+position.

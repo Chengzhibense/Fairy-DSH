@@ -19,7 +19,9 @@ test('bundles the canonical client diagnostics dependency', async () => {
 });
 
 test('proxies the pinned Playwright server and captures browser mutations', () => {
-  assert.match(proxy, /profiles', 'web', 'node_modules', '\.bin', 'playwright-mcp'/);
+  assert.match(proxy, /function resolvePlaywrightLaunch\(\)/);
+  assert.match(proxy, /'@playwright', 'mcp'/);
+  assert.match(proxy, /DSH_FAIRY_PROFILE_ROOT/);
   for (const action of ['browser_navigate', 'browser_click', 'browser_type', 'browser_fill_form', 'browser_tabs']) {
     assert.match(proxy, new RegExp(`'${action}'`));
   }

@@ -3,8 +3,3 @@ packages:
 
 nodeLinker: hoisted
 autoInstallPeers: false
-minimumReleaseAgeExclude:
-  - dsh-message-edit@0.2.3
-patchedDependencies:
-  dsh-message-edit@0.2.3: patches/dsh-message-edit@0.2.3.patch
-  dsh-reasoning-effort@0.6.2: patches/dsh-reasoning-effort@0.6.2.patch

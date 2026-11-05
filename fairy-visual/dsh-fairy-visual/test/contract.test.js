@@ -38,6 +38,7 @@ const selectionGuardSource = await read('../src/client/selection-guard.js');
 const mascotScaleSource = await read('../src/client/mascot-scale-control.js');
 const speedControlSource = await read('../src/client/mascot-animation-speed-control.js');
 const settingsWriteSource = await read('../src/client/settings-write.js');
+const settingsBridgeSource = await read('../src/client/settings-bridge.js');
 const observerManagerSource = await read('../src/client/dom-observer-manager.js');
 const semanticManagerSource = await read('../src/client/semantic-markers-manager.js');
 const sidebarManagerSource = await read('../src/client/sidebar-geometry-manager.js');
@@ -51,7 +52,7 @@ const mascotEyeSvgSource = await read('../src/client/mascot-eye-svg.js');
 const mascotGeometrySource = await read('../src/client/mascot-geometry.js');
 const mascotStaticSource = [mascotAssetsSource, mascotStyleSource, mascotEffectsSvgSource, mascotEyeSvgSource, mascotGeometrySource].join('\n');
 const clientSource = [clientEntrySource, semanticManagerSource, sidebarManagerSource, scrollbarsManagerSource, heroProjectionSource, mascotRuntimeSource, mascotStaticSource].join('\n');
-const source = [clientSource, constantsSource, utilsSource, styleSource, composerDockSource, composerMarkerSource, composerMaterialSource, composerNativeSource, composerWorkspaceSource, composerResizeSource, composerInsetSource, composerSessionSource, composerAnchorSource, toBottomSource, adapterSource, lifecycleSource, controllerLifecycleSource, modeThemeSource, stageLifecycleSource, scrollbarSource, semanticMarkerSource, geometrySource, mascotSource, brandGeometrySource, powerModeSource, surfaceUtilsSource, visualTransitionsSource, selectionGuardSource, mascotScaleSource, settingsWriteSource, observerManagerSource].join('\n');
+const source = [clientSource, constantsSource, utilsSource, styleSource, composerDockSource, composerMarkerSource, composerMaterialSource, composerNativeSource, composerWorkspaceSource, composerResizeSource, composerInsetSource, composerSessionSource, composerAnchorSource, toBottomSource, adapterSource, lifecycleSource, controllerLifecycleSource, modeThemeSource, stageLifecycleSource, scrollbarSource, semanticMarkerSource, geometrySource, mascotSource, brandGeometrySource, powerModeSource, surfaceUtilsSource, visualTransitionsSource, selectionGuardSource, mascotScaleSource, settingsWriteSource, settingsBridgeSource, observerManagerSource].join('\n');
 const bundle = await read('../lib/client.js');
 const manifest = JSON.parse(await read('../package.json'));
 
@@ -83,9 +84,10 @@ test('keeps the client entrypoint and extracted managers within their module bud
 test('ships an official client module with explicit lifecycle ownership', () => {
   assert.match(clientSource, /ctx\.slots\.inject\('shell\.overlay'/);
   assert.match(clientSource, /ctx\.slots\.inject\('conversation\.session\.header\.utilities'/);
-  assert.match(clientSource, /ctx\.settingsScope\.bind\(\{ namespace: SETTINGS_NAMESPACE \}\)/);
+  assert.match(clientSource, /createSettingsScope\(ctx, \{ namespace: SETTINGS_NAMESPACE/);
+  assert.match(settingsBridgeSource, /ctx\.remote\.settings\.mutate/);
   assert.match(clientSource, /this\.sessions\.binding/);
-  assert.match(clientSource, /module\.exports = \{ apply, inject: \['slots', 'sessions', 'settingsScope'\]/);
+  assert.match(clientSource, /module\.exports = \{ apply, inject: \['slots', 'sessions', 'remote', 'remote\.settings'\]/);
   assert.doesNotMatch(source, /__dshFairyLoaded|__dshFairyState|__dshFairySessionRuntime|localStorage|sessionStorage/);
   assert.match(bundle, /window\.__ModuleLoader__\.load\(/);
   assert.match(bundle, /id: 'dsh-fairy-visual'/);
@@ -106,11 +108,13 @@ test('keeps module ownership boundaries and official slot declarations', () => {
     '@deepseek-ai/dsh-client-ui-conversation',
     '@deepseek-ai/dsh-client-ui-settings',
     '@deepseek-ai/dsh-client-ui-primitives',
+    '@deepseek-ai/dsh-api-remotes',
   ]);
   assert.match(clientSource, /settings\.section/);
   assert.doesNotMatch(clientSource, /sessions\.clear\(\)|workspaces\.startSession\(\)|STARTUP_RESET_ATTR/);
   assert.doesNotMatch(source, /fairy-voice|127\.0\.0\.1:9880|agent\/pre-step/);
-  assert.match(serverSource, /settingsNamespace\(settingsNamespaceName\)/);
+  assert.match(serverSource, /export const Config = FairyVisualSettings/);
+  assert.match(serverSource, /\.volatile\(\)/);
   assert.match(contractTypes, /interface FairyVisualSettings/);
 });
 
@@ -217,11 +221,18 @@ test('keeps Hero and active-session placeholder ownership mutually exclusive', (
   const heroHost = heroProjectionSource.slice(heroProjectionSource.indexOf('function HeroHost'), heroProjectionSource.indexOf('function ActiveComposerPlaceholder'));
   const activePlaceholder = heroProjectionSource.slice(heroProjectionSource.indexOf('function ActiveComposerPlaceholder'));
   assert.match(heroHost, /let appliedPlaceholder = null/);
-  assert.match(heroHost, /if \(appliedPlaceholder !== null && current !== appliedPlaceholder\) originalPlaceholder = current/);
+  assert.match(heroHost, /originalPlaceholder = placeholderSnapshot\(textarea\)/);
+  assert.match(heroHost, /applyPlaceholder\(textarea, replacementPlaceholder\)/);
   assert.match(heroHost, /appliedPlaceholder = replacementPlaceholder/);
   assert.match(activePlaceholder, /const activeSurface = phase\(conversationSurface, 'active'\)/);
   assert.match(activePlaceholder, /const nextTextarea = activeSurface/);
   assert.match(activePlaceholder, /HeroHost owns the Hero textarea/);
+});
+
+test('keeps the Hero HDD toggle clear of the native right-sidebar control', () => {
+  assert.match(heroProjectionSource, /rightSidebarToggle\(document\)/);
+  assert.match(heroProjectionSource, /rightControlRect\.left - host\.offsetWidth - 8/);
+  assert.match(adapterSource, /rightSidebarToggle: ariaLabelSelector\('rightSidebarToggle'/);
 });
 
 test('limits root-level Hero observation to surface changes instead of chat streaming', () => {

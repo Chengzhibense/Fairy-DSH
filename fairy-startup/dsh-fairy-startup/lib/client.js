@@ -60,64 +60,107 @@ module.exports = { FAIRY_LOG_PREFIX, createFairyDiagnostics };
     })();
     const diagnostics = createFairyDiagnostics('dsh-fairy-startup');
 
-    function createWorkspaceStarter(workspaces) {
-      let unsubscribe = null;
+    function createWorkspaceStarter(uiWorkspace, workspaces, sessions) {
+      let unsubscribeWorkspaces = null;
+      let unsubscribeSessions = null;
+      let timer = null;
+      let deadline = 0;
       let started = false;
+      const stop = () => {
+        unsubscribeWorkspaces?.();
+        unsubscribeSessions?.();
+        if (timer !== null) clearTimeout(timer);
+        timer = null;
+        unsubscribeWorkspaces = null;
+        unsubscribeSessions = null;
+      };
+      const currentId = () => uiWorkspace.mainReference?.sessionId
+        ?? Object.values(sessions.list.getSnapshot().byId || {})
+          .find((row) => (row?.retainedBy?.mainView ?? 0) > 0)?.id;
       const startWhenReady = () => {
-        const snapshot = workspaces.list.getSnapshot();
-        if (started || !snapshot.baselinesReady) return false;
-        // rc.2+ keeps an empty workspace selection as a valid state. Calling
-        // startSession() without a target re-enters the official session
-        // projection synchronously, so leave the native new-session view alone.
-        if (snapshot.recentWorkspaceId !== undefined) {
+        if (started) return false;
+        // The official uiWorkspace restore may already have selected the last
+        // session. A blank session is already the fresh-document state; any
+        // restored conversation must be released before starting a new blank.
+        const mainId = currentId();
+        if (mainId !== undefined) {
+          const summary = sessions.list.getSnapshot().byId?.[mainId];
+          if (summary?.blank) {
+            started = true;
+            stop();
+            return true;
+          }
+          started = true;
+          stop();
           try {
-            workspaces.startSession();
+            if (typeof uiWorkspace.clearMain === 'function') uiWorkspace.clearMain();
+            if (typeof uiWorkspace.startSession === 'function') uiWorkspace.startSession();
+            else diagnostics.warn('session.start-fresh.unsupported', { surface: 'client' });
           } catch (error) {
             diagnostics.error('session.start-fresh', error, {});
-            return false;
           }
+          return true;
+        }
+        const workspace = workspaces.list.getSnapshot();
+        const session = sessions.list.getSnapshot();
+        if (workspace.phase !== 'ready' || session.phase !== 'ready') return false;
+        if (deadline === 0) deadline = Date.now() + 1500;
+        if (Date.now() < deadline) {
+          timer = setTimeout(startWhenReady, 100);
+          return false;
         }
         started = true;
-        unsubscribe?.();
-        unsubscribe = null;
+        stop();
+        try {
+          // No official restore is coming (for example, it already settled
+          // before this plugin loaded). Without a target this opens a fresh
+          // Session in the current or most recent Workspace, or stays on Hero.
+          if (typeof uiWorkspace.startSession === 'function') uiWorkspace.startSession();
+          else diagnostics.warn('session.start-fresh.unsupported', { surface: 'client' });
+        } catch (error) {
+          diagnostics.error('session.start-fresh', error, {});
+        }
         return true;
       };
       return {
         startOrSubscribe() {
-          if (!startWhenReady()) unsubscribe = workspaces.list.subscribe(startWhenReady);
+          if (startWhenReady()) return;
+          unsubscribeWorkspaces = workspaces.list.subscribe(startWhenReady);
+          unsubscribeSessions = sessions.list.subscribe(startWhenReady);
         },
         dispose() {
-          unsubscribe?.();
+          stop();
         },
       };
     }
 
-    function resetStartupSelection(sessions, workspaces) {
+    function resetStartupSelection(ctx) {
       const root = document.documentElement;
       if (root.hasAttribute(STARTUP_RESET_ATTR)) return null;
       root.setAttribute(STARTUP_RESET_ATTR, 'true');
 
-      // Clear restored selection synchronously so a previous conversation never
-      // flashes, then use the official workspace API once its baselines exist.
+      // Clear the persisted selection before the official restore settles so a
+      // previous conversation never flashes on a fresh document.
       try {
-        sessions.clear();
+        if (typeof ctx.uiWorkspace.clearMain === 'function') ctx.uiWorkspace.clearMain();
+        else diagnostics.warn('session.clear-restored.unsupported', { surface: 'client' });
       } catch (error) {
         root.removeAttribute(STARTUP_RESET_ATTR);
         diagnostics.error('session.clear-restored', error, {});
         throw error;
       }
-      const starter = createWorkspaceStarter(workspaces);
+      const starter = createWorkspaceStarter(ctx.uiWorkspace, ctx.workspaces, ctx.sessions);
       starter.startOrSubscribe();
       return () => starter.dispose();
     }
 
     function apply(ctx) {
       return diagnostics.guard('apply', () => {
-        const disposeReset = resetStartupSelection(ctx.sessions, ctx.workspaces);
+        const disposeReset = resetStartupSelection(ctx);
         if (disposeReset) ctx.effect(() => disposeReset, 'dsh-fairy-startup reset selection');
       }, { surface: 'client' });
     }
 
-    return { apply, inject: ['sessions', 'workspaces'], name: 'dsh-fairy-startup' };
+    return { apply, inject: ['sessions', 'workspaces', 'uiWorkspace'], name: 'dsh-fairy-startup' };
   },
 });
