@@ -377,3 +377,19 @@ card has no margin, outer radius, four-sided border, or shadow, and one top
 border spans the full conversation width. The resizer occupies the same top
 boundary rather than creating a second floating frame. Internal display and
 control ownership are unchanged; normal mode is unaffected.
+
+## Pending question cards
+
+When DSH replaces the composer bar with an `ask_user_question` card, HDD sizes
+the fixed composer seat to the card's natural height instead of the persisted
+input-bar height. The complete card and its footer stay inside the viewport,
+long option lists retain their own scroll body, and the normal pointer events
+and keyboard controls remain usable. The input-bar resize handle is hidden
+while this card owns the seat and returns with the native composer.
+
+After the user answers a question, DSH can briefly drop its own follow-tail
+state while the card is removed and the dock shrinks back to the configured
+height. Visual bridges that transition until the answer settles so the newest
+streamed text remains at the scroll floor. Explicit wheel-up, touch, Page Up,
+Home, and Arrow Up input cancels the bridge, preserving the reader's chosen
+position.

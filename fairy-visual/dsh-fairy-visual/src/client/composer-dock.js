@@ -23,6 +23,7 @@ const {
 } = require('./composer-workspace-projection.js');
 const { createInsetSynchronizer } = require('./composer-inset-synchronizer.js');
 const { createChatContentAnchor } = require('./chat-content-anchor.js');
+const { createChatTailFollower } = require('./chat-tail-follower.js');
 const { createToBottomPositioner } = require('./to-bottom-positioner.js');
 const { createComposerSessionResolver } = require('./composer-session-rebinding.js');
 const { createResizeController, HEIGHT_MIN, HEIGHT_MAX, CONTENT_MIN } = require('./composer-resize-controller.js');
@@ -54,6 +55,7 @@ const MARKER_ATTRS = [
   'data-dsh-fairy-composer-workspace-control',
   'data-dsh-fairy-composer-mode-control',
   'data-dsh-fairy-model-menu-open',
+  'data-dsh-fairy-composer-question',
 ];
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -85,6 +87,11 @@ function mountComposerDock(controller) {
   let observedHeaderActions = null;
   let seat = null;
   let card = null;
+  let questionPanel = null;
+  let questionResizeObserver = null;
+  let pendingQuestionExit = false;
+  let resumeTail = false;
+  let resumeTailScrollNodes = new Set();
   let clearControls = () => {};
   let mascotScaleBase = null;
   let mascotAnimationSpeedBase = null;
@@ -106,12 +113,19 @@ function mountComposerDock(controller) {
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
     return Math.max(HEIGHT_MIN, Math.min(HEIGHT_MAX, viewportHeight - CONTENT_MIN));
   };
-  const renderedHeight = () => attachmentDockHeight(
-    height,
-    attachmentRailHeight(attachmentSlot(card)),
-    HEIGHT_MIN,
-    maximumDockHeight(),
-  );
+  const renderedHeight = () => {
+    if (questionPanel?.isConnected) {
+      const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      const naturalHeight = Math.max(questionPanel.getBoundingClientRect().height, questionPanel.scrollHeight);
+      return clamp(Math.ceil(naturalHeight), HEIGHT_MIN, Math.max(HEIGHT_MIN, viewportHeight));
+    }
+    return attachmentDockHeight(
+      height,
+      attachmentRailHeight(attachmentSlot(card)),
+      HEIGHT_MIN,
+      maximumDockHeight(),
+    );
+  };
 
   const schedule = () => {
     if (!frame && !disposed) frame = domObserverManager.scheduleFrame(layoutFrameKey, sync);
@@ -119,6 +133,35 @@ function mountComposerDock(controller) {
   const scheduleStructure = () => {
     if (!structureFrame && !disposed) structureFrame = domObserverManager.scheduleFrame(structureFrameKey, bind);
   };
+  const clearResumeTail = () => {
+    resumeTail = false;
+    pendingQuestionExit = false;
+    resumeTailScrollNodes.forEach((node) => {
+      node.removeEventListener('wheel', onResumeTailWheel);
+      node.removeEventListener('touchstart', clearResumeTail);
+    });
+    resumeTailScrollNodes.clear();
+    document.removeEventListener('keydown', onResumeTailKeydown, true);
+  };
+  const resumeTailFollow = () => {
+    clearResumeTail();
+    resumeTail = true;
+    resumeTailScrollNodes = new Set(conversationScrolls(conversation).filter(Boolean));
+    resumeTailScrollNodes.forEach((node) => {
+      node.addEventListener('wheel', onResumeTailWheel, { passive: true });
+      node.addEventListener('touchstart', clearResumeTail, { passive: true });
+    });
+    document.addEventListener('keydown', onResumeTailKeydown, true);
+    schedule();
+  };
+  function onResumeTailWheel(event) {
+    if (event.deltaY < 0) clearResumeTail();
+  }
+  function onResumeTailKeydown(event) {
+    if (!['ArrowUp', 'PageUp', 'Home'].includes(event.key)) return;
+    const target = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
+    if (target?.closest?.('[data-conversation-scroll]')) clearResumeTail();
+  }
   const bindHeaderObserver = () => {
     const nextHeaderActions = sessionHeaderActions(conversation);
     if (nextHeaderActions === observedHeaderActions) return;
@@ -145,6 +188,13 @@ function mountComposerDock(controller) {
   const contentAnchor = createChatContentAnchor({
     getFlowNodes: () => chatFlows(conversation),
     getComposerNode: () => seat,
+    requestFrame: (callback) => requestAnimationFrame(callback),
+    cancelFrame: (id) => cancelAnimationFrame(id),
+    isDisposed: () => disposed,
+  });
+  const tailFollower = createChatTailFollower({
+    getFlowNodes: () => chatFlows(conversation),
+    shouldFollow: () => resumeTail,
     requestFrame: (callback) => requestAnimationFrame(callback),
     cancelFrame: (id) => cancelAnimationFrame(id),
     isDisposed: () => disposed,
@@ -178,6 +228,8 @@ function mountComposerDock(controller) {
 
   const restoreSeat = ({ clearWorkspaceTemplate = false } = {}) => {
     contentAnchor.clear();
+    clearResumeTail();
+    tailFollower.clear();
     toBottomPositioner.clear();
     // The scroll inset belongs to the previous conversation binding, not to
     // the current seat reference. A mode/phase transition can clear `seat`
@@ -191,6 +243,8 @@ function mountComposerDock(controller) {
     resizeObserver = null;
     conversation = null;
     surface = null;
+    questionResizeObserver?.disconnect();
+    questionResizeObserver = null;
     if (clearWorkspaceTemplate) workspaceTemplate = null;
     if (!seat) return;
     workspaceProjection?.remove();
@@ -217,6 +271,7 @@ function mountComposerDock(controller) {
     removeHandle();
     seat = null;
     card = null;
+    questionPanel = null;
   };
 
   const resizeController = createResizeController({
@@ -362,6 +417,27 @@ function mountComposerDock(controller) {
       removeLegacyVoiceDensityMarker();
       clearControls = placeNativeControlMarkers(card);
     }
+    const previousQuestionPanel = questionPanel;
+    const nextQuestionPanel = seat?.querySelector('[data-question-key]') || null;
+    if (nextQuestionPanel !== questionPanel) {
+      questionResizeObserver?.disconnect();
+      questionResizeObserver = null;
+      questionPanel = nextQuestionPanel;
+      if (questionPanel) seat.setAttribute('data-dsh-fairy-composer-question', 'true');
+      else seat.removeAttribute('data-dsh-fairy-composer-question');
+      if (questionPanel && typeof ResizeObserver === 'function') {
+        questionResizeObserver = new ResizeObserver(schedule);
+        questionResizeObserver.observe(questionPanel);
+      }
+      if (previousQuestionPanel && !questionPanel) pendingQuestionExit = true;
+    }
+    const lifecycle = snapshot().lifecycle;
+    if (pendingQuestionExit && lifecycle === 'running') {
+      pendingQuestionExit = false;
+      resumeTailFollow();
+    } else if (pendingQuestionExit && lifecycle === 'completed') {
+      pendingQuestionExit = false;
+    }
     removeLegacyMascotScaleControl();
     ensureMascotScaleBase();
     ensureMascotAnimationSpeedBase();
@@ -394,6 +470,8 @@ function mountComposerDock(controller) {
     syncMaterialLayer();
     insetSynchronizer.flush();
     contentAnchor.flush();
+    tailFollower.flush();
+    if (resumeTail && lifecycle === 'completed') clearResumeTail();
     toBottomPositioner.flush();
     updateHandle();
   }
@@ -424,6 +502,7 @@ function mountComposerDock(controller) {
     ensureWorkspaceProjection(seat?.querySelector('[data-dsh-fairy-composer-stack="true"]'), workspaceRow);
     syncReasoningMenuLayer();
     contentAnchor.schedule();
+    tailFollower.schedule();
     toBottomPositioner.schedule();
     schedule();
   }
@@ -476,6 +555,7 @@ function mountComposerDock(controller) {
     off?.();
     window.removeEventListener('resize', schedule);
     window.visualViewport?.removeEventListener('resize', schedule);
+    tailFollower.clear();
     toBottomPositioner.clear();
     restoreSeat({ clearWorkspaceTemplate: true });
   };

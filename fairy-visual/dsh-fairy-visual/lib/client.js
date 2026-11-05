@@ -363,6 +363,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		appendSection("shared-surfaces", `html[data-dsh-fairy-visual] .dsh-fairy-chat-content-anchored{display:flex!important;flex-direction:column!important;justify-content:flex-end!important;min-height:var(--dsh-fairy-chat-anchor-min-height)!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] body{--dsw-specific-sidebar-fill:transparent!important;--dsw-specific-sidebar-nav-item-hover:#0e243d!important;--dsw-specific-sidebar-nav-item-active:#143553!important;--dsw-specific-sidebar-nav-item-active-accent:#267fc4!important;--dsw-specific-input-major:#0a1c30!important;--dsw-specific-menu:#0e243d!important;--dsw-specific-selector:#0e243d!important;--dsw-specific-bubble:#103052!important;--dsw-specific-tip:#0e243d!important;--dsw-alias-button-elevated-fill:#103052!important;--dsw-alias-button-floating-fill:#103052!important;--dsw-alias-button-floating-hover:#17456f!important;--dsw-alias-button-ghost-active-fill:#17456f!important;--dsw-alias-markdown-citation:#103052!important;--dsw-alias-markdown-code-block:#0a1c30!important;--dsw-alias-markdown-code-block-banner:#0a1c30!important;--dsw-alias-markdown-inline-code:#103052!important;--dsw-alias-markdown-tag:#103052!important;--dsw-alias-markdown-code-segment-selected:#103052!important;--dsw-alias-markdown-code-segment-unselected:#0a1c30!important;--dsw-alias-markdown-placeholder:#0e243d!important;--dsw-alias-scrollbar-bg-l2:#143553!important;--dsw-alias-scrollbar-hover-l2:#267fc4!important}html[data-dsh-fairy-visual] [data-composer-card="true"]{background:#0a1c30!important;border-color:rgba(126,220,255,.28)!important}html[data-dsh-fairy-visual] [data-composer-card="true"] textarea{color:#e8f8ff!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-seat="true"]{background:transparent!important;background-color:transparent!important;background-image:none!important}`);
+		appendSection("composer-question", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-question="true"] [data-question-key]{pointer-events:auto!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-question="true"] .dsh-fairy-composer-resizer{display:none!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"]{position:fixed!important;bottom:0!important;box-sizing:border-box!important;z-index:1!important;display:flex!important;flex-direction:column!important;min-width:0!important;max-width:none!important;padding:0!important;background:transparent!important;pointer-events:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-slot="conversation.composer.dock"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-bar-root="true"]{box-sizing:border-box!important;width:100%!important;max-width:none!important;height:100%!important;min-height:0!important;padding:0!important;align-items:stretch!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(176px,max-content) minmax(0,1fr) minmax(176px,max-content)!important;grid-template-rows:auto minmax(0,1fr)!important;align-items:stretch!important;gap:0 12px!important;width:100%!important;max-width:none!important;height:100%!important;min-height:0!important;margin:0!important;padding:10px 12px!important;border-radius:0!important;pointer-events:auto!important;overflow:hidden!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll]{grid-column:2!important;grid-row:2!important;min-width:0!important;min-height:0!important;height:auto!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-accessory="true"]{grid-column:1 / -1!important;grid-row:1!important;min-width:0!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-row="true"]{display:contents!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-trailing="true"]{display:contents!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"]>*{grid-column:1!important;grid-row:2!important;align-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{grid-column:3!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-output-control="true"]{grid-column:3!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{grid-column:2!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer{position:absolute;z-index:20;inset:0 0 auto;height:12px;cursor:ns-resize;pointer-events:auto;touch-action:none}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer[data-dragging="true"]{cursor:grabbing}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll] textarea{max-height:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"] *{min-width:0}@media(max-width:900px){html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{grid-template-columns:minmax(132px,max-content) minmax(0,1fr) minmax(132px,max-content)!important}}@media(max-width:620px){html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-accessory="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"]>*:not([data-dsh-fairy-composer-send-control="true"]),html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-output-control="true"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{grid-column:1!important;grid-row:1!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{justify-self:end!important;align-self:end!important}}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"]{--dsh-composer-top-highlight:rgba(255,255,255,.13);--dsh-composer-top-face:rgba(255,255,255,.045);--dsh-composer-top-shade:rgba(0,0,0,.20);box-shadow:0 -7px 15px -11px rgba(0,0,0,.32),0 -22px 46px -20px rgba(0,0,0,.17)!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"]::before{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]::before{content:'';position:absolute;z-index:3;top:0;right:0;left:0;height:9px;pointer-events:none;background:linear-gradient(180deg,var(--dsh-composer-top-highlight) 0 .7px,var(--dsh-composer-top-face) 1.4px,var(--dsh-composer-top-shade) 2.6px,rgba(0,0,0,.07) 4px,transparent 9px)}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-composer-dock="true"]{--dsh-composer-top-highlight:rgba(255,255,255,.62);--dsh-composer-top-face:rgba(255,255,255,.20);--dsh-composer-top-shade:rgba(58,68,78,.18);box-shadow:0 -7px 15px -11px rgba(49,58,67,.21),0 -24px 50px -20px rgba(58,68,78,.12)!important}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]::before{background:linear-gradient(180deg,var(--dsh-composer-top-highlight) 0 .7px,var(--dsh-composer-top-face) 1.4px,var(--dsh-composer-top-shade) 2.6px,rgba(58,68,78,.055) 4px,transparent 9px)}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-stack="true"]{position:relative!important;display:block!important;width:100%!important;height:100%!important;min-height:0!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-chrome="true"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-workspace="true"]{position:absolute!important;z-index:4!important;left:12px!important;top:8px!important;margin:0!important;padding:0!important;display:flex!important;align-items:center!important;gap:1px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-bar-root="true"]{position:absolute!important;inset:0!important}`);
@@ -2323,6 +2324,60 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 	}));
 
 //#endregion
+//#region src/client/chat-tail-follower.js
+	var require_chat_tail_follower = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+		const FOLLOWING_ATTR = "data-chat-following-tail";
+		const SCROLL_SELECTOR = "[data-conversation-scroll]";
+		function createChatTailFollower({ getFlowNodes, shouldFollow, requestFrame, cancelFrame, isDisposed }) {
+			let frame = 0;
+			let resizeObserver = null;
+			let resizeNodes = /* @__PURE__ */ new Set();
+			const bindResizeNodes = () => {
+				if (typeof ResizeObserver !== "function") return;
+				const next = new Set((getFlowNodes?.() || []).filter(Boolean));
+				if (next.size === resizeNodes.size && [...next].every((node) => resizeNodes.has(node))) return;
+				resizeObserver?.disconnect();
+				resizeObserver = new ResizeObserver(schedule);
+				next.forEach((node) => resizeObserver.observe(node));
+				resizeNodes = next;
+			};
+			const sync = () => {
+				frame = 0;
+				bindResizeNodes();
+				(getFlowNodes?.() || []).forEach((flow) => {
+					if (!flow?.isConnected) return;
+					if (!flow.closest?.(`[${FOLLOWING_ATTR}]`) && !shouldFollow?.()) return;
+					const scroll = flow.closest?.(SCROLL_SELECTOR);
+					if (!scroll?.isConnected) return;
+					const bottom = Math.max(0, scroll.scrollHeight - scroll.clientHeight);
+					if (Math.abs(scroll.scrollTop - bottom) > 1) scroll.scrollTop = bottom;
+				});
+			};
+			function schedule() {
+				if (!frame && !isDisposed?.()) frame = requestFrame(sync);
+			}
+			const flush = () => {
+				if (frame) cancelFrame(frame);
+				frame = 0;
+				sync();
+			};
+			const clear = () => {
+				if (frame) cancelFrame(frame);
+				frame = 0;
+				resizeObserver?.disconnect();
+				resizeObserver = null;
+				resizeNodes.clear();
+			};
+			return {
+				schedule,
+				flush,
+				clear
+			};
+		}
+		module.exports = { createChatTailFollower };
+	}));
+
+//#endregion
 //#region src/client/to-bottom-positioner.js
 	var require_to_bottom_positioner = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		const SLOT_MARKER = "data-dsh-fairy-to-bottom-slot";
@@ -3159,6 +3214,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		const { captureWorkspaceTemplate: captureWorkspaceTemplateModule, ensureWorkspaceProjection: ensureWorkspaceProjectionModule, syncWorkspaceProjectionMode: syncWorkspaceProjectionModeModule } = require_composer_workspace_projection();
 		const { createInsetSynchronizer } = require_composer_inset_synchronizer();
 		const { createChatContentAnchor } = require_chat_content_anchor();
+		const { createChatTailFollower } = require_chat_tail_follower();
 		const { createToBottomPositioner } = require_to_bottom_positioner();
 		const { createComposerSessionResolver } = require_composer_session_rebinding();
 		const { createResizeController, HEIGHT_MIN, HEIGHT_MAX, CONTENT_MIN } = require_composer_resize_controller();
@@ -3189,7 +3245,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			"data-dsh-fairy-composer-access-control",
 			"data-dsh-fairy-composer-workspace-control",
 			"data-dsh-fairy-composer-mode-control",
-			"data-dsh-fairy-model-menu-open"
+			"data-dsh-fairy-model-menu-open",
+			"data-dsh-fairy-composer-question"
 		];
 		const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 		function clearMarker(node, name) {
@@ -3213,6 +3270,11 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			let observedHeaderActions = null;
 			let seat = null;
 			let card = null;
+			let questionPanel = null;
+			let questionResizeObserver = null;
+			let pendingQuestionExit = false;
+			let resumeTail = false;
+			let resumeTailScrollNodes = /* @__PURE__ */ new Set();
 			let clearControls = () => {};
 			let mascotScaleBase = null;
 			let mascotAnimationSpeedBase = null;
@@ -3233,13 +3295,52 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				const viewportHeight = window.visualViewport?.height || window.innerHeight;
 				return Math.max(HEIGHT_MIN, Math.min(HEIGHT_MAX, viewportHeight - CONTENT_MIN));
 			};
-			const renderedHeight = () => attachmentDockHeight(height, attachmentRailHeight(attachmentSlot(card)), HEIGHT_MIN, maximumDockHeight());
+			const renderedHeight = () => {
+				if (questionPanel?.isConnected) {
+					const viewportHeight = window.visualViewport?.height || window.innerHeight;
+					const naturalHeight = Math.max(questionPanel.getBoundingClientRect().height, questionPanel.scrollHeight);
+					return clamp(Math.ceil(naturalHeight), HEIGHT_MIN, Math.max(HEIGHT_MIN, viewportHeight));
+				}
+				return attachmentDockHeight(height, attachmentRailHeight(attachmentSlot(card)), HEIGHT_MIN, maximumDockHeight());
+			};
 			const schedule = () => {
 				if (!frame && !disposed) frame = domObserverManager.scheduleFrame(layoutFrameKey, sync);
 			};
 			const scheduleStructure = () => {
 				if (!structureFrame && !disposed) structureFrame = domObserverManager.scheduleFrame(structureFrameKey, bind);
 			};
+			const clearResumeTail = () => {
+				resumeTail = false;
+				pendingQuestionExit = false;
+				resumeTailScrollNodes.forEach((node) => {
+					node.removeEventListener("wheel", onResumeTailWheel);
+					node.removeEventListener("touchstart", clearResumeTail);
+				});
+				resumeTailScrollNodes.clear();
+				document.removeEventListener("keydown", onResumeTailKeydown, true);
+			};
+			const resumeTailFollow = () => {
+				clearResumeTail();
+				resumeTail = true;
+				resumeTailScrollNodes = new Set(conversationScrolls(conversation).filter(Boolean));
+				resumeTailScrollNodes.forEach((node) => {
+					node.addEventListener("wheel", onResumeTailWheel, { passive: true });
+					node.addEventListener("touchstart", clearResumeTail, { passive: true });
+				});
+				document.addEventListener("keydown", onResumeTailKeydown, true);
+				schedule();
+			};
+			function onResumeTailWheel(event) {
+				if (event.deltaY < 0) clearResumeTail();
+			}
+			function onResumeTailKeydown(event) {
+				if (![
+					"ArrowUp",
+					"PageUp",
+					"Home"
+				].includes(event.key)) return;
+				if ((event.target?.nodeType === 1 ? event.target : event.target?.parentElement)?.closest?.("[data-conversation-scroll]")) clearResumeTail();
+			}
 			const bindHeaderObserver = () => {
 				const nextHeaderActions = sessionHeaderActions(conversation);
 				if (nextHeaderActions === observedHeaderActions) return;
@@ -3263,6 +3364,13 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			const contentAnchor = createChatContentAnchor({
 				getFlowNodes: () => chatFlows(conversation),
 				getComposerNode: () => seat,
+				requestFrame: (callback) => requestAnimationFrame(callback),
+				cancelFrame: (id) => cancelAnimationFrame(id),
+				isDisposed: () => disposed
+			});
+			const tailFollower = createChatTailFollower({
+				getFlowNodes: () => chatFlows(conversation),
+				shouldFollow: () => resumeTail,
 				requestFrame: (callback) => requestAnimationFrame(callback),
 				cancelFrame: (id) => cancelAnimationFrame(id),
 				isDisposed: () => disposed
@@ -3292,12 +3400,16 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			};
 			const restoreSeat = ({ clearWorkspaceTemplate = false } = {}) => {
 				contentAnchor.clear();
+				clearResumeTail();
+				tailFollower.clear();
 				toBottomPositioner.clear();
 				clearScrollInsets();
 				resizeObserver?.disconnect();
 				resizeObserver = null;
 				conversation = null;
 				surface = null;
+				questionResizeObserver?.disconnect();
+				questionResizeObserver = null;
 				if (clearWorkspaceTemplate) workspaceTemplate = null;
 				if (!seat) return;
 				workspaceProjection?.remove();
@@ -3327,6 +3439,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				removeHandle();
 				seat = null;
 				card = null;
+				questionPanel = null;
 			};
 			const resizeController = createResizeController({
 				isEnabled: enabled,
@@ -3464,6 +3577,25 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 					removeLegacyVoiceDensityMarker();
 					clearControls = placeNativeControlMarkers(card);
 				}
+				const previousQuestionPanel = questionPanel;
+				const nextQuestionPanel = seat?.querySelector("[data-question-key]") || null;
+				if (nextQuestionPanel !== questionPanel) {
+					questionResizeObserver?.disconnect();
+					questionResizeObserver = null;
+					questionPanel = nextQuestionPanel;
+					if (questionPanel) seat.setAttribute("data-dsh-fairy-composer-question", "true");
+					else seat.removeAttribute("data-dsh-fairy-composer-question");
+					if (questionPanel && typeof ResizeObserver === "function") {
+						questionResizeObserver = new ResizeObserver(schedule);
+						questionResizeObserver.observe(questionPanel);
+					}
+					if (previousQuestionPanel && !questionPanel) pendingQuestionExit = true;
+				}
+				const lifecycle = snapshot().lifecycle;
+				if (pendingQuestionExit && lifecycle === "running") {
+					pendingQuestionExit = false;
+					resumeTailFollow();
+				} else if (pendingQuestionExit && lifecycle === "completed") pendingQuestionExit = false;
 				removeLegacyMascotScaleControl();
 				ensureMascotScaleBase();
 				ensureMascotAnimationSpeedBase();
@@ -3493,6 +3625,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				syncMaterialLayer();
 				insetSynchronizer.flush();
 				contentAnchor.flush();
+				tailFollower.flush();
+				if (resumeTail && lifecycle === "completed") clearResumeTail();
 				toBottomPositioner.flush();
 				updateHandle();
 			}
@@ -3522,6 +3656,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				ensureWorkspaceProjection(seat?.querySelector("[data-dsh-fairy-composer-stack=\"true\"]"), workspaceRow);
 				syncReasoningMenuLayer();
 				contentAnchor.schedule();
+				tailFollower.schedule();
 				toBottomPositioner.schedule();
 				schedule();
 			}
@@ -3577,6 +3712,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				off?.();
 				window.removeEventListener("resize", schedule);
 				window.visualViewport?.removeEventListener("resize", schedule);
+				tailFollower.clear();
 				toBottomPositioner.clear();
 				restoreSeat({ clearWorkspaceTemplate: true });
 			};
